@@ -1,2 +1,13 @@
-# oura-intervention
-Web-application for the "Självständigt arbete inom IT" course
+# Oura Intervention
+
+## About the project
+
+## Built with
+
+## Getting started
+
+### Prerequisites
+
+### Installation
+
+## Usage
