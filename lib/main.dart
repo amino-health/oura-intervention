@@ -1,27 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-void main() {
+import 'dart:html' as html;
+
+// import 'package:flutter/widgets.dart';
+
+// import 'package:oauth2/oauth2.dart' as oauth2;
+// import 'package:webview_flutter/webview_flutter.dart';
+
+//final authorizationEndpoint = Uri.parse('https://cloud.ouraring.com/oauth/authorize');
+//final tokenEndpoint = Uri.parse('https://api.ouraring.com/oauth/token');
+final clientId = 'Q4EDXKDK2244IHFU';
+final clientSecret = 'VYOANLDLNJ473P6W7YAA2FRB6C4KRBXX';
+//final redirectUrl = Uri.parse('wss://authresponse.ouraintervention.com');
+// final credentialsFile = File('~/.myapp/credentials.json');
+final currentUri = Uri.base;
+final redirectUri = Uri(
+    host: currentUri.host,
+    scheme: currentUri.scheme,
+    port: currentUri.port,
+    path: '/index.html',
+  );
+final authUrl = 'https://cloud.ouraring.com/oauth/authorize?client_id=$clientId&state=$clientSecret&redirect_uri=$redirectUri&response_type=token';
+
+
+void main() async {
   runApp(const MyApp());
+  // Open window
+  html.WindowBase _popupWin = html.window.open(authUrl, "Oura authentication", "width=800, height=900, scrollbars=yes");
+  var _token;
+
+  html.window.onMessage.listen((event) async {
+  /// If the event contains the token it means the user is authenticated.
+    if (event.data.toString().contains('access_token=')) {
+      _token = await _login(event.data, _popupWin);
+      var url = Uri.parse('http://api.ouraring.com/v1/userinfo?access_token=$_token');
+      var response = await http.get(url, headers: {
+          "Accept": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        });
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }
+  });
+}
+
+Future<String> _login(String data, _popupWin) async {
+  /// Parse data into an Uri to extract the token easily.
+  final receivedUri = Uri.parse(data);
+  
+  /// Get the access_token from the `Uri.fragement` (depending of the
+  /// authentication service it might be contained in another
+  /// property of your Uri.
+  var _token = receivedUri.fragment
+    .split('&')
+    .firstWhere((e) => e.startsWith('access_token='))
+    .substring('access_token='.length);
+  
+  //print(_token);
+  /// Close the popup window
+  if (_popupWin != null) {
+    _popupWin.close();
+    _popupWin = null;
+  }
+
+  return _token;
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
