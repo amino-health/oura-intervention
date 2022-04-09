@@ -1,6 +1,6 @@
 {
-    "name": "helloworld",
-    "short_name": "helloworld",
+    "name": "ouraintervention",
+    "short_name": "ouraintervention",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
