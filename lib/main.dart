@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 // ignore_for_file: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:ouraintervention/screens/ProfilePage.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
-import 'package:ouraintervention/widgets/groupedBarChart.dart';
+import 'package:ouraintervention/widgets/GroupedBarChart.dart';
 
 const clientId = 'Q4EDXKDK2244IHFU';
 const clientSecret = 'VYOANLDLNJ473P6W7YAA2FRB6C4KRBXX';
@@ -100,6 +101,13 @@ class _HomePageState extends State<HomePage> {
         print('Response body: ${response.body}');
       }
     });
+  }
+
+  void _navigateProfilePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ProfilePage()),
+    );
   }
 
   @override
