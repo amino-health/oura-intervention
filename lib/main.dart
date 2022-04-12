@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:ouraintervention/screens/ProfilePage.dart';
+import 'package:ouraintervention/navigator.dart'; // Navigation functions
 import 'package:ouraintervention/widgets/GroupedBarChart.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 
@@ -33,13 +32,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  void _navigateProfilePage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ProfilePage()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
