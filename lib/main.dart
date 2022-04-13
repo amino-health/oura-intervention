@@ -40,9 +40,7 @@ class _AppGlobalStateState extends State<AppGlobalState> {
                   'Please.. Make a pull request that changes me into a real dashboard...',
                   textScaleFactor: 0.8,
                 ),
-                LoadingWidget(
-                  future: Future<Widget>.delayed(Duration(days: 1)),
-                ),
+                LoadingWidget(),
                 Text(
                   'Ill be loading in the meanwhile...',
                   textScaleFactor: 0.3,
