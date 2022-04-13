@@ -48,6 +48,9 @@ dev_dependencies:
   oauth2: ^2.0.0
   webview_flutter: ^3.0.1
 
+  # Used for the login screen to the full app.
+  flutter_login: ^3.2.0
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
