@@ -4,6 +4,9 @@ import 'package:http/http.dart' as http;
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
+import 'package:ouraintervention/DetailedInterventions.dart';
+import 'package:ouraintervention/InterventionsList.dart';
+
 const clientId = 'Q4EDXKDK2244IHFU';
 const clientSecret = 'VYOANLDLNJ473P6W7YAA2FRB6C4KRBXX';
 final currentUri = Uri.base;
@@ -100,6 +103,20 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: InterventionList(interventions: [
+        Intervention(
+            name: "Caffeine",
+            description: "Stimulant and also pooping",
+            icon: Icons.free_breakfast),
+        Intervention(
+            name: "Shid",
+            description: "excretion of mass",
+            icon: Icons.favorite),
+        Intervention(
+            name: "Fard",
+            description: "excretion of gas",
+            icon: Icons.arrow_back),
+      ]),
       appBar: AppBar(
           title: Text(
             widget.title,
