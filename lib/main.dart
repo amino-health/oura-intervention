@@ -45,8 +45,7 @@ class _AppGlobalStateState extends State<AppGlobalState> {
             throw UnimplementedError("TODO place Jakob's oura auth page here"),
       },
       onUnknownRoute: (routeSettings) => MaterialPageRoute(
-        builder: (context) =>
-            Text("Unknown route: '${routeSettings.name}'"),
+        builder: (context) => Text("Unknown route: '${routeSettings.name}'"),
       ),
       title: 'Oura Intervention',
       theme: ThemeData(
