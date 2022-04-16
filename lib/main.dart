@@ -1,74 +1,57 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'package:ouraintervention/navigator.dart'; // Navigation functions
-import 'package:ouraintervention/widgets/GroupedBarChart.dart';
-import 'package:ouraintervention/widgets/OuraLoginButton.dart';
+
+import 'screens/LoginScreen.dart';
+import 'widgets/LoadingWidget.dart';
+import 'package:ouraintervention/Dashboard.dart';
 
 void main() async {
-  runApp(const OuraIntervention());
+  runApp(const AppGlobalState());
 }
 
-class OuraIntervention extends StatelessWidget {
-  const OuraIntervention({Key? key}) : super(key: key);
+class AppGlobalState extends StatefulWidget {
+  const AppGlobalState({Key? key}) : super(key: key);
 
+  @override
+  State<AppGlobalState> createState() => _AppGlobalStateState();
+}
+
+class _AppGlobalStateState extends State<AppGlobalState> {
+  // User login state.
+  String? _email;
+  String? _password;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: _email == null ? '/login' : '/dashboard',
+      routes: {
+        '/login': (context) => LoginScreen(
+              onLogin: (identity, secret) {
+                setState(() {
+                  _email = identity;
+                  _password = secret;
+                });
+              },
+            ),
+        '/dashboard': (context) => Dashboard(
+              title: 'Oura Intervention',
+            ),
+        '/settings': (context) =>
+            throw UnimplementedError("TODO place ex. SettingsWidget here"),
+        '/settings/addservice': (context) =>
+            throw UnimplementedError("TODO place ex. ServiceListWidget here"),
+        '/services/oura': (context) =>
+            throw UnimplementedError("TODO place Jakob's oura auth page here"),
+      },
+      onUnknownRoute: (routeSettings) => MaterialPageRoute(
+        builder: (context) =>
+            Text("Unknown route: '${routeSettings.name}'"),
+      ),
       title: 'Oura Intervention',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomePage(title: 'Oura Intervention'),
     );
   }
 }
-
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: Text(
-              widget.title,
-              style: const TextStyle(fontSize: 25.0, color: Colors.white),
-            ),
-            centerTitle: true,
-            actions: const <Widget>[OuraLoginButton()]),
-        body: Center(
-          // Example usage of GroupedBarChart
-          child: GroupedBarChart(dataLists: exampleData),
-        ));
-  }
-}
-
-List<List<Data>> exampleData = [
-  [
-    Data('2015', 1),
-    Data('2016', 2),
-    Data('2017', 3),
-    Data('2018', 4),
-    Data('2019', 5)
-  ],
-  [
-    Data('2015', 6),
-    Data('2016', 7),
-    Data('2017', 8),
-    Data('2018', 9),
-    Data('2019', 10)
-  ],
-  [
-    Data('2015', 11),
-    Data('2016', 12),
-    Data('2017', 13),
-    Data('2018', 14),
-    Data('2019', 15)
-  ]
-];
