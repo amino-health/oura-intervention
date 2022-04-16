@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_login/flutter_login.dart';
 
-class LoginWidget extends StatelessWidget {
+class LoginScreen extends StatelessWidget {
   final void Function(String identity, String secret) onLogin;
 
-  const LoginWidget({
+  const LoginScreen({
     Key? key,
     required this.onLogin,
   }) : super(key: key);

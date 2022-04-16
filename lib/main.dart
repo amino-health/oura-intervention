@@ -2,8 +2,9 @@
 
 import 'package:flutter/material.dart';
 
-import 'login_widget.dart';
-import 'loading_widget.dart';
+import 'screens/LoginScreen.dart';
+import 'widgets/LoadingWidget.dart';
+import 'package:ouraintervention/Dashboard.dart';
 
 void main() async {
   runApp(const AppGlobalState());
@@ -18,42 +19,23 @@ class AppGlobalState extends StatefulWidget {
 
 class _AppGlobalStateState extends State<AppGlobalState> {
   // User login state.
-  String? _userToken;
-  String? _userSecret;
+  String? _email;
+  String? _password;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: _userToken == null ? '/login' : '/dashboard',
+      initialRoute: _email == null ? '/login' : '/dashboard',
       routes: {
-        '/login': (context) => LoginWidget(
+        '/login': (context) => LoginScreen(
               onLogin: (identity, secret) {
                 setState(() {
-                  _userToken = identity;
-                  _userSecret = secret;
+                  _email = identity;
+                  _password = secret;
                 });
               },
             ),
-        '/dashboard': (context) => Column(
-              children: [
-                Text('..Hello, $_userToken...'),
-                Text(
-                  'Please.. Make a pull request that changes me into a real dashboard...',
-                  textScaleFactor: 0.8,
-                ),
-                LoadingWidget(),
-                Text(
-                  'Ill be loading in the meanwhile...',
-                  textScaleFactor: 0.3,
-                ),
-                Text(
-                  'Your secret is $_userSecret, please keep it safe. :)',
-                  textScaleFactor: 0.6,
-                ),
-                Text(
-                  'Never print it in big red text, it is a secret! Remember that.',
-                  textScaleFactor: 0.8,
-                ),
-              ],
+        '/dashboard': (context) => Dashboard(
+              title: 'Oura Intervention',
             ),
         '/settings': (context) =>
             throw UnimplementedError("TODO place ex. SettingsWidget here"),
@@ -64,7 +46,7 @@ class _AppGlobalStateState extends State<AppGlobalState> {
       },
       onUnknownRoute: (routeSettings) => MaterialPageRoute(
         builder: (context) =>
-            Text("Unknown route: '${routeSettings.name}', Ay caramba!"),
+            Text("Unknown route: '${routeSettings.name}'"),
       ),
       title: 'Oura Intervention',
       theme: ThemeData(
