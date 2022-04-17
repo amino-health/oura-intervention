@@ -6,6 +6,9 @@ import 'screens/LoginScreen.dart';
 import 'widgets/LoadingWidget.dart';
 import 'package:ouraintervention/Dashboard.dart';
 
+import 'package:ouraintervention/DetailedInterventions.dart';
+import 'package:ouraintervention/InterventionsList.dart';
+
 void main() async {
   runApp(const AppGlobalState());
 }
