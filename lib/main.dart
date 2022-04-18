@@ -4,9 +4,30 @@ import 'package:flutter/material.dart';
 
 import 'screens/LoginScreen.dart';
 import 'widgets/LoadingWidget.dart';
-import 'package:ouraintervention/Dashboard.dart';
+import 'package:ouraintervention/screens/Dashboard.dart';
+
+// Firebase
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+/// Returns all data from a [collection] as a list.
+/// Returns `[]` if collection is non-existing.
+Future<List> getCollectionData(String collection) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  QuerySnapshot snapshot = await firestore.collection(collection).get();
+  final data = snapshot.docs.map((doc) => doc.data()).toList();
+  return data;
+}
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  // Example data fetch
+  List exampleData = await getCollectionData('users');
+  print(exampleData);
   runApp(const AppGlobalState());
 }
 
@@ -45,8 +66,7 @@ class _AppGlobalStateState extends State<AppGlobalState> {
             throw UnimplementedError("TODO place Jakob's oura auth page here"),
       },
       onUnknownRoute: (routeSettings) => MaterialPageRoute(
-        builder: (context) =>
-            Text("Unknown route: '${routeSettings.name}'"),
+        builder: (context) => Text("Unknown route: '${routeSettings.name}'"),
       ),
       title: 'Oura Intervention',
       theme: ThemeData(

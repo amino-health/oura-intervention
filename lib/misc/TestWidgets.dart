@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ouraintervention/screens/ProfilePage.dart';
+import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/widgets/GroupedBarChart.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 
@@ -44,7 +44,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int indexWidget = -1;
 
-  /// Retrieves the name of a widget in the 
+  /// Retrieves the name of a widget in the
   /// widgetList given an [index] of the list
   String _getWidgetName(index) {
     String name = widgetList.elementAt(index).toString();
