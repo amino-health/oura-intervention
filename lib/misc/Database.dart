@@ -47,4 +47,21 @@ class Database {
 
     return AddUserStatus.successful;
   }
+
+  /// Deletes a user from the database based on their [username].
+  /// Returns `true` if deletion was successful, `false` if not.
+  Future<bool> deleteUser(String username) async {
+    List users = await getCollectionData('users');
+    for (var user in users) {
+      if (user['username'] == username) {
+        firestore
+            .collection('users')
+            .doc(username)
+            .delete()
+            .catchError((error) => throw Exception('Unknown error'));
+        return true;
+      }
+    }
+    return false;
+  }
 }
