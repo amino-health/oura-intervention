@@ -7,7 +7,7 @@ import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 ///
 /// Usage:
 /// 1. Import widget and add to 'widgetList'
-/// 2. Flutter run -t lib/TestWidgets.dart
+/// 2. Flutter run -t lib/misc/TestWidgets.dart
 /// 3. Press corresponding button
 
 List<Widget> widgetList = [
