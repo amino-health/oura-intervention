@@ -10,15 +10,7 @@ import 'package:ouraintervention/screens/Dashboard.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-/// Returns all data from a [collection] as a list.
-/// Returns `[]` if collection is non-existing.
-Future<List> getCollectionData(String collection) async {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  QuerySnapshot snapshot = await firestore.collection(collection).get();
-  final data = snapshot.docs.map((doc) => doc.data()).toList();
-  return data;
-}
+import 'package:ouraintervention/misc/Database.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,8 +18,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   // Example data fetch
-  List exampleData = await getCollectionData('users');
-  print(exampleData);
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  Database database = Database(firestore);
+  await database.addUser('testuser', 'testpass', 'testmail.test@gmail.com');
   runApp(const AppGlobalState());
 }
 
