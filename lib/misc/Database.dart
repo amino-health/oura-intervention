@@ -18,6 +18,7 @@ class Database {
   }
 
   /// Adds a users [username], [password] and [email] to the database.
+  /// The [username] is also used as the document ID.
   Future<AddUserStatus> addUser(
       String username, String password, String email) async {
     List users = await getCollectionData('users');
@@ -38,7 +39,7 @@ class Database {
       }
     }
 
-    firestore.collection('users').add({
+    firestore.collection('users').doc(username).set({
       'username': username,
       'password': password,
       'email': email
