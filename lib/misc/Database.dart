@@ -1,67 +1,71 @@
 //import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-enum AddUserStatus { successful, usernameBusy, emailBusy, invalidEmail }
+enum AddUserStatus {
+  successful,
+  emailBusy,
+  emailInvalid,
+  passwordWeak,
+  unknownError
+}
 
 class Database {
-  Database(this.firestore);
+  Database(this.firestore, this.authentication);
 
   final FirebaseFirestore firestore;
+  final FirebaseAuth authentication;
 
   /// Returns all data from a [collection] as a list.
   /// Returns `[]` if collection is non-existing.
   Future<List> getCollectionData(String collection) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
     QuerySnapshot snapshot = await firestore.collection(collection).get();
     final data = snapshot.docs.map((doc) => doc.data()).toList();
     return data;
   }
 
-  /// Adds a users [username], [password] and [email] to the database.
-  /// The [username] is also used as the document ID.
-  Future<AddUserStatus> addUser(
-      String username, String password, String email) async {
-    List users = await getCollectionData('users');
-
-    bool emailValid = RegExp(
-            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-        .hasMatch(email);
-    if (!emailValid) {
-      return AddUserStatus.invalidEmail;
-    }
-
-    for (var user in users) {
-      if (user['username'] == username) {
-        return AddUserStatus.usernameBusy;
+  /// Adds a users [email] and [password] to the database.
+  Future<AddUserStatus> addUser(String email, String password) async {
+    try {
+      // TODO: send this to coach
+      UserCredential credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-email') {
+        return AddUserStatus.emailInvalid;
       }
-      if (user['email'] == email) {
+      if (e.code == 'weak-password') {
+        return AddUserStatus.passwordWeak;
+      }
+      if (e.code == 'email-already-in-use') {
         return AddUserStatus.emailBusy;
       }
+      return AddUserStatus.unknownError;
+    } catch (e) {
+      throw Exception(e);
     }
-
-    firestore.collection('users').doc(username).set({
-      'username': username,
-      'password': password,
-      'email': email
-    }).catchError((error) => throw Exception('Unknown error'));
-
     return AddUserStatus.successful;
   }
 
-  /// Deletes a user from the database based on their [username].
-  /// Returns `true` if deletion was successful, `false` if not.
-  Future<bool> deleteUser(String username) async {
-    List users = await getCollectionData('users');
-    for (var user in users) {
-      if (user['username'] == username) {
-        firestore
-            .collection('users')
-            .doc(username)
-            .delete()
-            .catchError((error) => throw Exception('Unknown error'));
-        return true;
+  /// Deletes a user from the database based on their [email] and [password].
+  /// Returns `true` if deletion is successfull, `false` if not.
+  Future<bool> deleteUser(String email, String password) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return false;
+    }
+
+    AuthCredential credential =
+        EmailAuthProvider.credential(email: email, password: password);
+    await user.reauthenticateWithCredential(credential);
+
+    try {
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        throw Exception(e);
       }
     }
-    return false;
+    return true;
   }
 }

@@ -11,16 +11,18 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ouraintervention/misc/Database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // Example data fetch
+
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-  Database database = Database(firestore);
-  await database.addUser('testuser', 'testpass', 'testmail.test@gmail.com');
+  FirebaseAuth authentication = FirebaseAuth.instance;
+  Database database = Database(firestore, authentication);
+
   runApp(const AppGlobalState());
 }
 

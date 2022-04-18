@@ -49,6 +49,7 @@ dev_dependencies:
   webview_flutter: ^3.0.1
   charts_flutter:
   cloud_firestore:
+  firebase_auth:
 
   # Used for the login screen to the full app.
   flutter_login: ^3.2.0
