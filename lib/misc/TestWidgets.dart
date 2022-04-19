@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ouraintervention/screens/ProfilePage.dart';
+import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/widgets/GroupedBarChart.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 
@@ -7,7 +7,7 @@ import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 ///
 /// Usage:
 /// 1. Import widget and add to 'widgetList'
-/// 2. Flutter run -t lib/TestWidgets.dart
+/// 2. Flutter run -t lib/misc/TestWidgets.dart
 /// 3. Press corresponding button
 
 List<Widget> widgetList = [
@@ -44,7 +44,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int indexWidget = -1;
 
-  /// Retrieves the name of a widget in the 
+  /// Retrieves the name of a widget in the
   /// widgetList given an [index] of the list
   String _getWidgetName(index) {
     String name = widgetList.elementAt(index).toString();

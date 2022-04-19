@@ -4,9 +4,25 @@ import 'package:flutter/material.dart';
 
 import 'screens/LoginScreen.dart';
 import 'widgets/LoadingWidget.dart';
-import 'package:ouraintervention/Dashboard.dart';
+import 'package:ouraintervention/screens/Dashboard.dart';
+
+// Firebase
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ouraintervention/misc/Database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseAuth authentication = FirebaseAuth.instance;
+  Database database = Database(firestore, authentication);
+
   runApp(const AppGlobalState());
 }
 
@@ -45,8 +61,7 @@ class _AppGlobalStateState extends State<AppGlobalState> {
             throw UnimplementedError("TODO place Jakob's oura auth page here"),
       },
       onUnknownRoute: (routeSettings) => MaterialPageRoute(
-        builder: (context) =>
-            Text("Unknown route: '${routeSettings.name}'"),
+        builder: (context) => Text("Unknown route: '${routeSettings.name}'"),
       ),
       title: 'Oura Intervention',
       theme: ThemeData(
