@@ -16,15 +16,20 @@ class LoginScreen extends StatelessWidget {
       // TODO ....dont show these obviously
       showDebugButtons: true,
       disableCustomPageTransformer: true,
-      onLogin: (p0) {
-        onLogin(p0.name, p0.password);
+      onLogin: (data) {
+        print(data.name);
+        print(data.password);
         return null;
+      },
+      onSignup: (data) {
+        print(data.name);
+        print(data.password);
       },
       onSubmitAnimationCompleted: () {
         Navigator.of(context).popAndPushNamed("/dashboard");
       },
-      onRecoverPassword: (p0) {
-        print("onRecoverPassword and ${p0.toString()} turned up");
+      onRecoverPassword: (data) {
+        print("onRecoverPassword and ${data.toString()} turned up");
 
         return Future.delayed(
             const Duration(seconds: 1), () => "onRecoverPassword done");
