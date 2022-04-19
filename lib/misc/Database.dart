@@ -31,7 +31,7 @@ class Database {
       String email, String password, String username) async {
     try {
       // TODO: send this to coach
-      UserCredential credential = await FirebaseAuth.instance
+      UserCredential credential = await authentication
           .createUserWithEmailAndPassword(email: email, password: password);
       String uid = credential.user!.uid;
       firestore.collection('users').doc(uid).set({
@@ -58,7 +58,7 @@ class Database {
   /// Deletes a user from the database based on their [email] and [password].
   /// Returns `true` if deletion is successfull, `false` if not.
   Future<bool> deleteUser(String email, String password) async {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = authentication.currentUser;
     if (user == null) {
       return false;
     }
@@ -80,8 +80,8 @@ class Database {
   /// Logins a user from the databased based on their [email] and [password].
   Future<LoginUserStatus> loginUser(String email, String password) async {
     try {
-      await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      await authentication.signInWithEmailAndPassword(
+          email: email, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         return LoginUserStatus.emailInvalid;
@@ -94,5 +94,10 @@ class Database {
       }
     }
     return LoginUserStatus.successful;
+  }
+
+  /// Logs out the currently logged in user
+  Future<void> logoutUser() async {
+    await authentication.signOut();
   }
 }
