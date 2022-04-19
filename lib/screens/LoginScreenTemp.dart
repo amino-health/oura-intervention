@@ -46,7 +46,29 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
   }
 
   void signup() async {
-    // TODO
+    AddUserStatus addUserStatus = await widget.database
+        .addUser(emailController.text, passwordController.text, 'username');
+    switch (addUserStatus) {
+      case AddUserStatus.successful:
+        Navigator.pushNamed(context, '/dashboard');
+        return;
+      case AddUserStatus.emailBusy:
+        return setState(() {
+          _errorText = "Email already in use";
+        });
+      case AddUserStatus.emailInvalid:
+        return setState(() {
+          _errorText = "Invalid email";
+        });
+      case AddUserStatus.passwordWeak:
+        return setState(() {
+          _errorText = "Password is too weak";
+        });
+      default:
+        return setState(() {
+          _errorText = "Unknown error";
+        });
+    }
   }
 
   // User login state.
