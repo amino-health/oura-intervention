@@ -1,4 +1,4 @@
-//import 'package:firebase_core/firebase_core.dart';
+// ignore: file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -9,6 +9,8 @@ enum AddUserStatus {
   passwordWeak,
   unknownError
 }
+
+enum LoginUserStatus { successful, emailInvalid, userNotFound, passwordInvalid }
 
 class Database {
   Database(this.firestore, this.authentication);
@@ -25,11 +27,17 @@ class Database {
   }
 
   /// Adds a users [email] and [password] to the database.
-  Future<AddUserStatus> addUser(String email, String password) async {
+  Future<AddUserStatus> addUser(
+      String email, String password, String username) async {
     try {
       // TODO: send this to coach
       UserCredential credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
+      String uid = credential.user!.uid;
+      firestore.collection('users').doc(uid).set({
+        'admin': false,
+        'username': username,
+      }).catchError((error) => throw Exception('Unknown error'));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         return AddUserStatus.emailInvalid;
@@ -67,5 +75,24 @@ class Database {
       }
     }
     return true;
+  }
+
+  /// Logins a user from the databased based on their [email] and [password].
+  Future<LoginUserStatus> loginUser(String email, String password) async {
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-email') {
+        return LoginUserStatus.emailInvalid;
+      }
+      if (e.code == 'user-not-found') {
+        return LoginUserStatus.userNotFound;
+      }
+      if (e.code == 'wrong-password') {
+        return LoginUserStatus.passwordInvalid;
+      }
+    }
+    return LoginUserStatus.successful;
   }
 }
