@@ -12,8 +12,10 @@ class LoginScreenTemp extends StatefulWidget {
 }
 
 class _LoginScreenTempState extends State<LoginScreenTemp> {
+  final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   String _errorText = "";
   bool _loggedIn = false;
 
@@ -51,7 +53,7 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
 
   void signup() async {
     AddUserStatus addUserStatus = await widget.database
-        .addUser(emailController.text, passwordController.text, 'username');
+        .addUser(emailController.text, passwordController.text, usernameController.text);
     switch (addUserStatus) {
       case AddUserStatus.successful:
         setState(() {
@@ -69,6 +71,10 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
       case AddUserStatus.passwordWeak:
         return setState(() {
           _errorText = "Password is too weak";
+        });
+      case AddUserStatus.tooManyRequests:
+        return setState(() {
+          _errorText = "Too many requests";
         });
       default:
         return setState(() {
@@ -101,6 +107,13 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
                         width: 300,
                         height: 30,
                       ),
+                TextField(
+                  controller: usernameController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Username',
+                  ),
+                ),
                 TextField(
                   controller: emailController,
                   decoration: const InputDecoration(

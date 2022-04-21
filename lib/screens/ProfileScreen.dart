@@ -34,16 +34,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           color: Color.fromARGB(255, 241, 241, 241),
                         ),
-                        child: Center(
-                            child: FutureBuilder(
-                                future: widget.database.getEmail(),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<String?> text) {
-                                  return Text(
-                                    text.data ?? "",
-                                    style: const TextStyle(fontSize: 20),
-                                  );
-                                })),
+                        child: Column(
+                          children: [
+                            Expanded(
+                                child: Center(
+                                    child: FutureBuilder(
+                                        future: widget.database.getEmail(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String?> text) {
+                                          return Text(
+                                            text.data ?? "",
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          );
+                                        }))),
+                            Expanded(
+                                child: Center(
+                                    child: FutureBuilder(
+                                        future: widget.database
+                                            .getFieldValue('users', 'username'),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String?> text) {
+                                          return Text(
+                                            text.data ?? "",
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          );
+                                        }))),
+                          ],
+                        ),
                       ))),
               Expanded(
                   child: Padding(
