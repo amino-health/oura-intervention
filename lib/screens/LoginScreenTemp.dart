@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
-import 'package:ouraintervention/screens/SideNavigationContainer.dart';
+import 'package:ouraintervention/widgets/SidebarScreenContainer.dart';
 
 class LoginScreenTemp extends StatefulWidget {
   const LoginScreenTemp({Key? key, required this.database}) : super(key: key);
@@ -15,7 +15,7 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   String _errorText = "";
-  bool _loggedIn = false;
+  bool _loggedIn = true;
 
   void login() async {
     LoginUserStatus loginUserStatus = await widget.database
@@ -81,7 +81,7 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
   @override
   Widget build(BuildContext context) {
     return _loggedIn
-        ? const SideNavigationContainer()
+        ? const SidebarScreenContainer()
         : MaterialApp(
             home: Scaffold(
                 body: SafeArea(

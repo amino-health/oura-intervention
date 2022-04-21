@@ -5,19 +5,14 @@ import 'package:flutter/material.dart';
 // Screens
 import 'package:ouraintervention/screens/LoginScreenTemp.dart';
 
-// Widgets
-import 'package:ouraintervention/screens/Dashboard.dart';
-
 //Misc
 import 'package:ouraintervention/misc/Database.dart';
 
 // Firebase
 import 'package:firebase_core/firebase_core.dart';
-import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:ouraintervention/widgets/SideBar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

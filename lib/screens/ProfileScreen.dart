@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ouraintervention/widgets/Sidebar.dart';
-import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: Center(
-            child: Column(
+    return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -52,6 +48,6 @@ class ProfileScreen extends StatelessWidget {
                       ))),
             ],
           ))
-        ])));
+        ]);
   }
 }

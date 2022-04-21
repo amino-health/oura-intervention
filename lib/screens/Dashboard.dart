@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
-import 'package:ouraintervention/widgets/SideBar.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -15,6 +14,6 @@ class _DashboardState extends State<Dashboard> {
   // User login state.
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('TODO: DASHBOARDSCREEN'));
+    return Text('TODO: DASHBOARDSCREEN');
   }
 }

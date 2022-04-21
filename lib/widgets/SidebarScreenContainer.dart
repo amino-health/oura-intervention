@@ -1,4 +1,7 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
+import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 import 'package:ouraintervention/screens/Dashboard.dart';
 import 'package:ouraintervention/screens/InboxScreen.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
@@ -12,15 +15,16 @@ List<Widget> routes = [
 ];
 List<String> images = ['home.png', 'profile.png', 'settings.png', 'inbox.png'];
 
-class Sidebar extends StatefulWidget {
-  const Sidebar({Key? key}) : super(key: key);
+class SidebarScreenContainer extends StatefulWidget {
+  const SidebarScreenContainer({Key? key}) : super(key: key);
 
   @override
-  State<Sidebar> createState() => _SidebarState();
+  State<SidebarScreenContainer> createState() =>
+      _SidebarScreenContainerState();
 }
 
-class _SidebarState extends State<Sidebar> {
-  int _currentScreenIndex = 1;
+class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
+  int _currentScreenIndex = 0;
 
   double buttonSize = 100.0;
   double padding = 10;
@@ -48,17 +52,27 @@ class _SidebarState extends State<Sidebar> {
     return buttons;
   }
 
+  // User login state.
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-            width: buttonSize + 2 * padding,
-            child: Container(
-                color: Color.fromARGB(255, 143, 143, 143),
-                child: ListView(children: _createButtons()))),
-        routes[_currentScreenIndex]
-      ],
-    );
+    return MaterialApp(
+        home: Scaffold(
+            appBar: AppBar(
+                title: Text(
+                  'Oura Intervention',
+                  style: const TextStyle(fontSize: 25.0, color: Colors.white),
+                ),
+                centerTitle: true,
+                actions: const <Widget>[OuraLoginButton()]),
+            body: Row(
+              children: [
+                SizedBox(
+                    width: buttonSize + 2 * padding,
+                    child: Container(
+                        color: Color.fromARGB(255, 143, 143, 143),
+                        child: ListView(children: _createButtons()))),
+                Expanded(child: Center(child: routes[_currentScreenIndex]))
+              ],
+            )));
   }
 }
