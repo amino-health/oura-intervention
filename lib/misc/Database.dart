@@ -37,16 +37,12 @@ class Database {
   /// Returns the value of a field given a [collection] and a [field]
   Future<String> getFieldValue(String collection, String field) async {
     String uid = authentication.currentUser!.uid;
-    String fieldValue = await firestore
-    .collection('users')
-    .doc(uid)
-    .get()
-    .then((value) {
-       return value.data()![field];
-     });
-     return fieldValue;
+    String fieldValue =
+        await firestore.collection('users').doc(uid).get().then((value) {
+      return value.data()![field];
+    });
+    return fieldValue;
   }
-  
 
   /// Adds a users [email] and [password] to the database.
   Future<AddUserStatus> addUser(
@@ -67,7 +63,7 @@ class Database {
         return AddUserStatus.passwordWeak;
       } else if (e.code == 'email-already-in-use') {
         return AddUserStatus.emailBusy;
-      } else if (e.code == 'too-many-requests'){
+      } else if (e.code == 'too-many-requests') {
         return AddUserStatus.tooManyRequests;
       } else {
         return AddUserStatus.unknownError;
@@ -102,7 +98,7 @@ class Database {
 
   /// Logins a user from the databased based on their [email] and [password].
   Future<LoginUserStatus> loginUser(String email, String password) async {
-    UserCredential? credential;
+    UserCredential credential;
     try {
       credential = await authentication.signInWithEmailAndPassword(
           email: email, password: password);
@@ -135,5 +131,30 @@ class Database {
       return "";
     }
     return user.email;
+  }
+
+  /// Updates the [password] of a user in the database to a new
+  /// password given the [email] of the user and a [newPassword].
+  Future<bool> updatePassword(
+      String email, String password, String newPassword) async {
+    final user = authentication.currentUser;
+    if (user == null) {
+      throw Exception('User is null');
+    }
+    AuthCredential credential =
+        EmailAuthProvider.credential(email: email, password: password);
+    await user.reauthenticateWithCredential(credential);
+
+    try {
+      user.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        return false;
+      }
+      throw Exception(e);
+    } catch(e) {
+      throw Exception(e);
+    }
+    return true;
   }
 }
