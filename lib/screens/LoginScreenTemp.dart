@@ -15,7 +15,7 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   String _errorText = "";
-  bool _loggedIn = true;
+  bool _loggedIn = false;
 
   void login() async {
     LoginUserStatus loginUserStatus = await widget.database
@@ -81,7 +81,7 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
   @override
   Widget build(BuildContext context) {
     return _loggedIn
-        ? const SidebarScreenContainer()
+        ? SidebarScreenContainer(database: widget.database)
         : MaterialApp(
             home: Scaffold(
                 body: SafeArea(

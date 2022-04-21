@@ -111,4 +111,12 @@ class Database {
   Future<void> logoutUser() async {
     await authentication.signOut();
   }
+
+  Future<String?> getEmail() async {
+    User? user = authentication.currentUser;
+    if (user == null) {
+      return "";
+    }
+    return user.email;
+  }
 }
