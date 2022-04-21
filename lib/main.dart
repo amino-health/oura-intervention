@@ -13,9 +13,11 @@ import 'package:ouraintervention/misc/Database.dart';
 
 // Firebase
 import 'package:firebase_core/firebase_core.dart';
+import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ouraintervention/widgets/SideBar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,29 +46,6 @@ class AppGlobalState extends StatefulWidget {
 class _AppGlobalStateState extends State<AppGlobalState> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => LoginScreenTemp(
-              database: widget.database,
-            ),
-        '/dashboard': (context) => Dashboard(
-              title: 'Oura Intervention',
-            ),
-        '/settings': (context) =>
-            throw UnimplementedError("TODO place ex. SettingsWidget here"),
-        '/settings/addservice': (context) =>
-            throw UnimplementedError("TODO place ex. ServiceListWidget here"),
-        '/services/oura': (context) =>
-            throw UnimplementedError("TODO place Jakob's oura auth page here"),
-      },
-      onUnknownRoute: (routeSettings) => MaterialPageRoute(
-        builder: (context) => Text("Unknown route: '${routeSettings.name}'"),
-      ),
-      title: 'Oura Intervention',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-    );
+    return LoginScreenTemp(database: widget.database);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/widgets/GroupedBarChart.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
+import 'package:ouraintervention/widgets/Sidebar.dart';
 
 /// This file is used for testing and debugging widgets or screens.
 ///
@@ -14,6 +15,7 @@ List<Widget> widgetList = [
   GroupedBarChart(dataLists: exampleData),
   const OuraLoginButton(),
   const ProfilePage(),
+  const Sidebar(),
 ];
 
 void main() async {

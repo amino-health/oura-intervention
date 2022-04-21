@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 import 'package:ouraintervention/widgets/SideBar.dart';
 
-class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+class SideNavigationContainer extends StatefulWidget {
+  const SideNavigationContainer({Key? key}) : super(key: key);
 
   @override
-  State<Dashboard> createState() => _DashboardState();
+  State<SideNavigationContainer> createState() =>
+      _SideNavigationContainerState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _SideNavigationContainerState extends State<SideNavigationContainer> {
   // User login state.
   @override
   Widget build(BuildContext context) {

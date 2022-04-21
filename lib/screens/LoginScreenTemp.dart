@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
+import 'package:ouraintervention/screens/SideNavigationContainer.dart';
 
 class LoginScreenTemp extends StatefulWidget {
   const LoginScreenTemp({Key? key, required this.database}) : super(key: key);
@@ -20,7 +21,11 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
         .loginUser(emailController.text, passwordController.text);
     switch (loginUserStatus) {
       case LoginUserStatus.successful:
-        Navigator.pushNamed(context, '/dashboard');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const SideNavigationContainer()),
+        );
         return;
       case LoginUserStatus.userNotFound:
         return setState(() {
@@ -50,7 +55,11 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
         .addUser(emailController.text, passwordController.text, 'username');
     switch (addUserStatus) {
       case AddUserStatus.successful:
-        Navigator.pushNamed(context, '/dashboard');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const SideNavigationContainer()),
+        );
         return;
       case AddUserStatus.emailBusy:
         return setState(() {
