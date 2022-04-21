@@ -2,15 +2,19 @@
 
 import 'package:flutter/material.dart';
 
-import 'screens/LoginScreen.dart';
-import 'widgets/LoadingWidget.dart';
+// Screens
+import 'package:ouraintervention/screens/LoginScreenTemp.dart';
+
+// Widgets
 import 'package:ouraintervention/screens/Dashboard.dart';
+
+//Misc
+import 'package:ouraintervention/misc/Database.dart';
 
 // Firebase
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ouraintervention/misc/Database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
@@ -23,32 +27,28 @@ void main() async {
   FirebaseAuth authentication = FirebaseAuth.instance;
   Database database = Database(firestore, authentication);
 
-  runApp(const AppGlobalState());
+  runApp(AppGlobalState(
+    database: database,
+  ));
 }
 
 class AppGlobalState extends StatefulWidget {
-  const AppGlobalState({Key? key}) : super(key: key);
+  const AppGlobalState({Key? key, required this.database}) : super(key: key);
+
+  final Database database;
 
   @override
   State<AppGlobalState> createState() => _AppGlobalStateState();
 }
 
 class _AppGlobalStateState extends State<AppGlobalState> {
-  // User login state.
-  String? _email;
-  String? _password;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: _email == null ? '/login' : '/dashboard',
+      initialRoute: '/login',
       routes: {
-        '/login': (context) => LoginScreen(
-              onLogin: (identity, secret) {
-                setState(() {
-                  _email = identity;
-                  _password = secret;
-                });
-              },
+        '/login': (context) => LoginScreenTemp(
+              database: widget.database,
             ),
         '/dashboard': (context) => Dashboard(
               title: 'Oura Intervention',

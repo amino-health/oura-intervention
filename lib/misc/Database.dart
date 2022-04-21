@@ -10,7 +10,14 @@ enum AddUserStatus {
   unknownError
 }
 
-enum LoginUserStatus { successful, emailInvalid, userNotFound, passwordInvalid }
+enum LoginUserStatus {
+  successful,
+  emailInvalid,
+  userNotFound,
+  passwordInvalid,
+  tooManyRequests,
+  unknownError
+}
 
 class Database {
   Database(this.firestore, this.authentication);
@@ -41,14 +48,13 @@ class Database {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         return AddUserStatus.emailInvalid;
-      }
-      if (e.code == 'weak-password') {
+      } else if (e.code == 'weak-password') {
         return AddUserStatus.passwordWeak;
-      }
-      if (e.code == 'email-already-in-use') {
+      } else if (e.code == 'email-already-in-use') {
         return AddUserStatus.emailBusy;
+      } else {
+        return AddUserStatus.unknownError;
       }
-      return AddUserStatus.unknownError;
     } catch (e) {
       throw Exception(e);
     }
@@ -79,19 +85,24 @@ class Database {
 
   /// Logins a user from the databased based on their [email] and [password].
   Future<LoginUserStatus> loginUser(String email, String password) async {
+    UserCredential? credential;
     try {
-      await authentication.signInWithEmailAndPassword(
+      credential = await authentication.signInWithEmailAndPassword(
           email: email, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         return LoginUserStatus.emailInvalid;
-      }
-      if (e.code == 'user-not-found') {
+      } else if (e.code == 'user-not-found') {
         return LoginUserStatus.userNotFound;
-      }
-      if (e.code == 'wrong-password') {
+      } else if (e.code == 'wrong-password') {
         return LoginUserStatus.passwordInvalid;
+      } else if (e.code == 'too-many-requests') {
+        return LoginUserStatus.tooManyRequests;
+      } else {
+        return LoginUserStatus.unknownError;
       }
+    } catch (e) {
+      throw Exception(e);
     }
     return LoginUserStatus.successful;
   }
