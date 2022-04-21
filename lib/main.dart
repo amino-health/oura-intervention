@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 // Screens
 import 'package:ouraintervention/screens/LoginScreenTemp.dart';
 
-// Widgets
-import 'package:ouraintervention/screens/Dashboard.dart';
-
 //Misc
 import 'package:ouraintervention/misc/Database.dart';
 
@@ -44,29 +41,6 @@ class AppGlobalState extends StatefulWidget {
 class _AppGlobalStateState extends State<AppGlobalState> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => LoginScreenTemp(
-              database: widget.database,
-            ),
-        '/dashboard': (context) => Dashboard(
-              title: 'Oura Intervention',
-            ),
-        '/settings': (context) =>
-            throw UnimplementedError("TODO place ex. SettingsWidget here"),
-        '/settings/addservice': (context) =>
-            throw UnimplementedError("TODO place ex. ServiceListWidget here"),
-        '/services/oura': (context) =>
-            throw UnimplementedError("TODO place Jakob's oura auth page here"),
-      },
-      onUnknownRoute: (routeSettings) => MaterialPageRoute(
-        builder: (context) => Text("Unknown route: '${routeSettings.name}'"),
-      ),
-      title: 'Oura Intervention',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-    );
+    return LoginScreenTemp(database: widget.database);
   }
 }
