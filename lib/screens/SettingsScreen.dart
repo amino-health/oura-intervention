@@ -7,6 +7,6 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('TODO: INBOXSCREEN'));
+    return Center(child: Text('TODO: SETTINGSSCREEN'));
   }
 }

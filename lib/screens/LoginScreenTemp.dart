@@ -15,17 +15,16 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   String _errorText = "";
+  bool _loggedIn = false;
 
   void login() async {
     LoginUserStatus loginUserStatus = await widget.database
         .loginUser(emailController.text, passwordController.text);
     switch (loginUserStatus) {
       case LoginUserStatus.successful:
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const SideNavigationContainer()),
-        );
+        setState(() {
+          _loggedIn = true;
+        });
         return;
       case LoginUserStatus.userNotFound:
         return setState(() {
@@ -55,11 +54,9 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
         .addUser(emailController.text, passwordController.text, 'username');
     switch (addUserStatus) {
       case AddUserStatus.successful:
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const SideNavigationContainer()),
-        );
+        setState(() {
+          _loggedIn = true;
+        });
         return;
       case AddUserStatus.emailBusy:
         return setState(() {
@@ -83,50 +80,54 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
   // User login state.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            body: SafeArea(
-                child: Center(
-                    child: Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _errorText == ""
-              ? const SizedBox.shrink()
-              : Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Color.fromARGB(255, 212, 128, 122),
+    return _loggedIn
+        ? const SideNavigationContainer()
+        : MaterialApp(
+            home: Scaffold(
+                body: SafeArea(
+                    child: Center(
+                        child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _errorText == ""
+                    ? const SizedBox.shrink()
+                    : Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Color.fromARGB(255, 212, 128, 122),
+                        ),
+                        child: Center(child: Text(_errorText)),
+                        width: 300,
+                        height: 30,
+                      ),
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Email',
                   ),
-                  child: Center(child: Text(_errorText)),
-                  width: 300,
-                  height: 30,
                 ),
-          TextField(
-            controller: emailController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Email',
+                TextField(
+                  controller: passwordController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Password',
+                  ),
+                  obscureText: true,
+                ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                        onPressed: login, child: const Text('Login')),
+                    ElevatedButton(
+                        onPressed: signup, child: const Text('Signup'))
+                  ],
+                )
+              ],
             ),
-          ),
-          TextField(
-            controller: passwordController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Password',
-            ),
-            obscureText: true,
-          ),
-          Row(
-            children: [
-              ElevatedButton(onPressed: login, child: const Text('Login')),
-              ElevatedButton(onPressed: signup, child: const Text('Signup'))
-            ],
-          )
-        ],
-      ),
-      width: 300,
-      height: 300,
-    )))));
+            width: 300,
+            height: 300,
+          )))));
   }
 }

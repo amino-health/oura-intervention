@@ -15,14 +15,6 @@ class _DashboardState extends State<Dashboard> {
   // User login state.
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: Text(
-              'Oura Intervention',
-              style: const TextStyle(fontSize: 25.0, color: Colors.white),
-            ),
-            centerTitle: true,
-            actions: const <Widget>[OuraLoginButton()]),
-        body: Sidebar());
+    return Center(child: Text('TODO: DASHBOARDSCREEN'));
   }
 }
