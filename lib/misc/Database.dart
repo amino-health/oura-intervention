@@ -1,6 +1,7 @@
 // ignore: file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 enum AddUserStatus {
   successful,
@@ -18,6 +19,14 @@ enum LoginUserStatus {
   passwordInvalid,
   tooManyRequests,
   unknownError
+}
+
+enum updatePasswordStatus {
+  successful,
+  emailInvalid,
+  passwordIncorrect,
+  unknownError,
+  passwordWeak
 }
 
 class Database {
@@ -135,7 +144,7 @@ class Database {
 
   /// Updates the [password] of a user in the database to a new
   /// password given the [email] of the user and a [newPassword].
-  Future<bool> updatePassword(
+  Future<updatePasswordStatus> updatePassword(
       String email, String password, String newPassword) async {
     final user = authentication.currentUser;
     if (user == null) {
@@ -143,18 +152,28 @@ class Database {
     }
     AuthCredential credential =
         EmailAuthProvider.credential(email: email, password: password);
-    await user.reauthenticateWithCredential(credential);
+    try {
+      await user.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-email') {
+        return updatePasswordStatus.emailInvalid;
+      } else if (e.code == 'wrong-password') {
+        return updatePasswordStatus.passwordIncorrect;
+      } else {
+        return updatePasswordStatus.unknownError;
+      }
+    }
 
     try {
-      user.updatePassword(newPassword);
+      await user.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        return false;
+        return updatePasswordStatus.passwordWeak;
       }
       throw Exception(e);
     } catch(e) {
       throw Exception(e);
     }
-    return true;
+    return updatePasswordStatus.successful;
   }
 }

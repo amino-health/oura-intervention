@@ -28,7 +28,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
     routes = [
       Dashboard(),
       ProfileScreen(database: widget.database),
-      SettingsScreen(),
+      SettingsScreen(database: widget.database),
       InboxScreen()
     ];
   }
