@@ -80,13 +80,17 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
         print('Response status: ${response.statusCode}');
         print('Response body: ${response.body}');
 
+        // Decode the string from HTTP request to API
         Map<String, dynamic> sleepJson =
             jsonDecode(response.body) as Map<String, dynamic>;
-        List<SleepData> sleepList = [];
 
+        // Translate it so that Database method can be used to upload
+        List<SleepData> sleepList = [];
         for (int i = 0; i < sleepJson['sleep']!.length; i++) {
           sleepList.add(SleepData.fromJson(sleepJson['sleep']![i]));
         }
+
+        //temporary print until database upload is figured out
         print(sleepList);
       }
     });
