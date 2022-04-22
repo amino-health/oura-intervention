@@ -1,9 +1,13 @@
 import 'dart:html';
+import 'dart:io';
 // ignore_for_file: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:ouraintervention/misc/Database.dart';
+import 'package:ouraintervention/objects/SleepData.dart';
 
 const clientId = 'Q4EDXKDK2244IHFU';
 const clientSecret = 'VYOANLDLNJ473P6W7YAA2FRB6C4KRBXX';
@@ -66,8 +70,7 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
         });
         var token = await _login(event.data, popupWindow);
         var url = Uri.parse(
-            'http://api.ouraring.com/v1/userinfo?access_token=$token');
-
+            'https://api.ouraring.com/v1/sleep?start=2020-01-01&end=2022-04-22&access_token=$token');
         // TODO: To avoid CORS-issues, this HTTP GET
         //       request should moved to the backend!
         var response = await http.get(url, headers: {
@@ -76,6 +79,15 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
         });
         print('Response status: ${response.statusCode}');
         print('Response body: ${response.body}');
+
+        Map<String, dynamic> sleepJson =
+            jsonDecode(response.body) as Map<String, dynamic>;
+        List<SleepData> sleepList = [];
+
+        for (int i = 0; i < sleepJson['sleep']!.length; i++) {
+          sleepList.add(SleepData.fromJson(sleepJson['sleep']![i]));
+        }
+        print(sleepList);
       }
     });
   }
