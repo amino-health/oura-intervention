@@ -1,6 +1,7 @@
 // ignore: file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ouraintervention/objects/SleepData.dart';
 
 enum AddUserStatus {
   successful,
@@ -110,5 +111,34 @@ class Database {
   /// Logs out the currently logged in user
   Future<void> logoutUser() async {
     await authentication.signOut();
+  }
+
+  /// Uploads data from Oura API
+  Future<bool> uploadOuraData(List<SleepData> data) async {
+    final userid = authentication.currentUser!.uid;
+
+    if (data.length == 0.0) {
+      return false; //no data to upload
+    }
+    for (SleepData doc in data) {
+      firestore
+          .collection('users')
+          .doc(userid)
+          .collection('sleep')
+          .doc(doc.date)
+          .set({
+            'minHr': doc.minHr,
+            'avgHr': doc.avgHr,
+            'maxHr': doc.maxHr,
+            'totalSleep': doc.totalSleep,
+            'lightSleep': doc.lightSleep,
+            'remSleep': doc.remSleep,
+            'deepSleep': doc.deepSleep
+          })
+          .then((value) => print("Sleep data uploaded"))
+          .catchError((error) =>
+              print("Failed to upload sleep data for ${doc.date}: $error"));
+    }
+    return true;
   }
 }
