@@ -22,7 +22,9 @@ final authUrl =
     'https://cloud.ouraring.com/oauth/authorize?client_id=$clientId&state=$clientSecret&redirect_uri=$redirectUri&response_type=token';
 
 class OuraLoginButton extends StatefulWidget {
-  const OuraLoginButton({Key? key}) : super(key: key);
+  const OuraLoginButton({Key? key, required this.database}) : super(key: key);
+
+  final Database database;
 
   @override
   State<OuraLoginButton> createState() => _OuraLoginButtonState();
@@ -71,14 +73,10 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
         var token = await _login(event.data, popupWindow);
         var url = Uri.parse(
             'https://api.ouraring.com/v1/sleep?start=2020-01-01&end=2022-04-22&access_token=$token');
-        // TODO: To avoid CORS-issues, this HTTP GET
-        //       request should moved to the backend!
         var response = await http.get(url, headers: {
           "Accept": "application/json",
           "Access-Control-Allow-Origin": "*"
         });
-        print('Response status: ${response.statusCode}');
-        print('Response body: ${response.body}');
 
         // Decode the string from HTTP request to API
         Map<String, dynamic> sleepJson =
@@ -90,8 +88,7 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
           sleepList.add(SleepData.fromJson(sleepJson['sleep']![i]));
         }
 
-        //temporary print until database upload is figured out
-        print(sleepList);
+        widget.database.uploadOuraData(sleepList);
       }
     });
   }

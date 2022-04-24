@@ -2,9 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
+import 'package:ouraintervention/misc/Database.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key, required this.title}) : super(key: key);
+  const Dashboard({Key? key, required this.title, required this.database}) : super(key: key);
+
+  final Database database;
 
   final String title;
 
@@ -23,7 +26,7 @@ class _DashboardState extends State<Dashboard> {
               style: const TextStyle(fontSize: 25.0, color: Colors.white),
             ),
             centerTitle: true,
-            actions: const <Widget>[OuraLoginButton()]),
+            actions: <Widget>[OuraLoginButton(database: widget.database,)]),
         body: Center(child: Text('TODO'),
         ));
   }

@@ -6,6 +6,7 @@ import 'package:ouraintervention/screens/Dashboard.dart';
 import 'package:ouraintervention/screens/InboxScreen.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/screens/SettingsScreen.dart';
+import 'package:ouraintervention/misc/Database.dart';
 
 List<Widget> routes = [
   Dashboard(),
@@ -16,7 +17,9 @@ List<Widget> routes = [
 List<String> images = ['home.png', 'profile.png', 'settings.png', 'inbox.png'];
 
 class SidebarScreenContainer extends StatefulWidget {
-  const SidebarScreenContainer({Key? key}) : super(key: key);
+  const SidebarScreenContainer({Key? key, required this.database}) : super(key: key);
+
+  final Database database;
 
   @override
   State<SidebarScreenContainer> createState() =>
@@ -63,7 +66,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
                   style: const TextStyle(fontSize: 25.0, color: Colors.white),
                 ),
                 centerTitle: true,
-                actions: const <Widget>[OuraLoginButton()]),
+                actions: <Widget>[OuraLoginButton(database: widget.database)]),
             body: Row(
               children: [
                 SizedBox(
