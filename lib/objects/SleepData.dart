@@ -27,22 +27,23 @@ class SleepData {
   });
 
   factory SleepData.fromJson(Map<String, dynamic> json) {
-    //remove all zero-values from sleep heart-rate
-    List<double> hr = json['hr_5min'].where((f) => (f > 0)).toList();
-    //because max heart-rate is not included as an attribute, we can
-    //calculate it from this list.
-    hr.sort();
-    double maxHr = hr.last;
-
+    //because max heart rate is not stored, we have to calculate it
+    List<dynamic> hr = json['hr_5min'];
+    List<double> hrList = [];
+    for (int i = 0; i < hr.length; i++) {
+      hrList.add(hr[i] as double);
+    }
+    hrList.sort();
+    double maxHr = hrList.last;
     return SleepData(
-      minHr: json['hr_lowest'],
-      avgHr: json['hr_average'],
+      minHr: json['hr_lowest'] as double,
+      avgHr: json['hr_average'] as double,
       maxHr: maxHr,
-      totalSleep: json['total'],
-      lightSleep: json['light'],
-      remSleep: json['rem'],
-      deepSleep: json['deep'],
-      date: json['summary_date'],
+      totalSleep: json['total'] as int,
+      lightSleep: json['light'] as int,
+      remSleep: json['rem'] as int,
+      deepSleep: json['deep'] as int,
+      date: json['summary_date'] as String,
     );
   }
 }
