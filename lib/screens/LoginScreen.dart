@@ -123,7 +123,7 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
                     padding: const EdgeInsets.all(12),
                     child: SizedBox(
                         width: 350,
-                        height: _signup ? 300 : 230,
+                        height: _signup ? 300 : 250,
                         child: DecoratedBox(
                             decoration: BoxDecoration(
                                 border: Border.all(
@@ -187,6 +187,7 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
                                                 setState(
                                                   () {
                                                     _signup = false;
+                                                    _errorText = "";
                                                   },
                                                 )
                                               },
@@ -197,6 +198,7 @@ class _LoginScreenTempState extends State<LoginScreenTemp> {
                                                 setState(
                                                   () {
                                                     _signup = true;
+                                                    _errorText = "";
                                                   },
                                                 )
                                               },
