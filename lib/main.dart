@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 // Screens
-import 'package:ouraintervention/screens/LoginScreenTemp.dart';
+import 'package:ouraintervention/screens/LoginScreen.dart';
 
 //Misc
 import 'package:ouraintervention/misc/Database.dart';
