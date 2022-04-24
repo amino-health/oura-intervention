@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
 import 'package:ouraintervention/widgets/SidebarScreenContainer.dart';
 
-class LoginScreenTemp extends StatefulWidget {
-  const LoginScreenTemp({Key? key, required this.database}) : super(key: key);
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key, required this.database}) : super(key: key);
 
   final Database database;
 
   @override
-  State<LoginScreenTemp> createState() => _LoginScreenTempState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenTempState extends State<LoginScreenTemp> {
+class _LoginScreenState extends State<LoginScreen> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();

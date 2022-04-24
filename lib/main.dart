@@ -41,6 +41,6 @@ class AppGlobalState extends StatefulWidget {
 class _AppGlobalStateState extends State<AppGlobalState> {
   @override
   Widget build(BuildContext context) {
-    return LoginScreenTemp(database: widget.database);
+    return LoginScreen(database: widget.database);
   }
 }
