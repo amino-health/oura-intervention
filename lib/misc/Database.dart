@@ -1,12 +1,14 @@
 // ignore: file_names
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 enum AddUserStatus {
   successful,
   emailBusy,
   emailInvalid,
   passwordWeak,
+  tooManyRequests,
   unknownError
 }
 
@@ -17,6 +19,14 @@ enum LoginUserStatus {
   passwordInvalid,
   tooManyRequests,
   unknownError
+}
+
+enum updatePasswordStatus {
+  successful,
+  emailInvalid,
+  passwordIncorrect,
+  unknownError,
+  passwordWeak
 }
 
 class Database {
@@ -31,6 +41,16 @@ class Database {
     QuerySnapshot snapshot = await firestore.collection(collection).get();
     final data = snapshot.docs.map((doc) => doc.data()).toList();
     return data;
+  }
+
+  /// Returns the value of a field given a [collection] and a [field]
+  Future<String> getFieldValue(String collection, String field) async {
+    String uid = authentication.currentUser!.uid;
+    String fieldValue =
+        await firestore.collection('users').doc(uid).get().then((value) {
+      return value.data()![field];
+    });
+    return fieldValue;
   }
 
   /// Adds a users [email] and [password] to the database.
@@ -52,6 +72,8 @@ class Database {
         return AddUserStatus.passwordWeak;
       } else if (e.code == 'email-already-in-use') {
         return AddUserStatus.emailBusy;
+      } else if (e.code == 'too-many-requests') {
+        return AddUserStatus.tooManyRequests;
       } else {
         return AddUserStatus.unknownError;
       }
@@ -72,7 +94,9 @@ class Database {
     AuthCredential credential =
         EmailAuthProvider.credential(email: email, password: password);
     await user.reauthenticateWithCredential(credential);
-
+    DocumentReference document = firestore.collection('users').doc(user.uid);
+    await document.delete();
+    print(user.uid);
     try {
       await user.delete();
     } on FirebaseAuthException catch (e) {
@@ -85,7 +109,7 @@ class Database {
 
   /// Logins a user from the databased based on their [email] and [password].
   Future<LoginUserStatus> loginUser(String email, String password) async {
-    UserCredential? credential;
+    UserCredential credential;
     try {
       credential = await authentication.signInWithEmailAndPassword(
           email: email, password: password);
@@ -99,6 +123,7 @@ class Database {
       } else if (e.code == 'too-many-requests') {
         return LoginUserStatus.tooManyRequests;
       } else {
+        print(e.code);
         return LoginUserStatus.unknownError;
       }
     } catch (e) {
@@ -110,5 +135,49 @@ class Database {
   /// Logs out the currently logged in user
   Future<void> logoutUser() async {
     await authentication.signOut();
+  }
+
+  Future<String?> getEmail() async {
+    User? user = authentication.currentUser;
+    if (user == null) {
+      return "";
+    }
+    return user.email;
+  }
+
+  /// Updates the [password] of a user in the database to a new
+  /// password given the [email] of the user and a [newPassword].
+  Future<updatePasswordStatus> updatePassword(
+      String email, String password, String newPassword) async {
+    final user = authentication.currentUser;
+    if (user == null) {
+      throw Exception('User is null');
+    }
+    AuthCredential credential =
+        EmailAuthProvider.credential(email: email, password: password);
+    try {
+      await user.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-email') {
+        return updatePasswordStatus.emailInvalid;
+      } else if (e.code == 'wrong-password') {
+        return updatePasswordStatus.passwordIncorrect;
+      } else {
+        print(e.code);
+        return updatePasswordStatus.unknownError;
+      }
+    }
+
+    try {
+      await user.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        return updatePasswordStatus.passwordWeak;
+      }
+      throw Exception(e);
+    } catch(e) {
+      throw Exception(e);
+    }
+    return updatePasswordStatus.successful;
   }
 }
