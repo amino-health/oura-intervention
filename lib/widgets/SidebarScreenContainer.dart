@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:ouraintervention/misc/Database.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 import 'package:ouraintervention/screens/Dashboard.dart';
 import 'package:ouraintervention/screens/InboxScreen.dart';
@@ -8,13 +9,6 @@ import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/screens/SettingsScreen.dart';
 import 'package:ouraintervention/misc/Database.dart';
 
-List<Widget> routes = [
-  Dashboard(),
-  ProfileScreen(),
-  SettingsScreen(),
-  InboxScreen()
-];
-List<String> images = ['home.png', 'profile.png', 'settings.png', 'inbox.png'];
 
 class SidebarScreenContainer extends StatefulWidget {
   const SidebarScreenContainer({Key? key, required this.database}) : super(key: key);
@@ -22,11 +16,23 @@ class SidebarScreenContainer extends StatefulWidget {
   final Database database;
 
   @override
-  State<SidebarScreenContainer> createState() =>
-      _SidebarScreenContainerState();
+  State<SidebarScreenContainer> createState() => _SidebarScreenContainerState();
 }
 
 class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
+  List<Widget> routes = [];
+  List<String> images = ['home.png', 'profile.png', 'settings.png', 'inbox.png'];
+  
+  @override
+  void initState() {
+    routes = [
+      Dashboard(),
+      ProfileScreen(database: widget.database),
+      SettingsScreen(database: widget.database),
+      InboxScreen()
+    ];
+  }
+
   int _currentScreenIndex = 0;
 
   double buttonSize = 100.0;
@@ -74,7 +80,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
                     child: Container(
                         color: Color.fromARGB(255, 143, 143, 143),
                         child: ListView(children: _createButtons()))),
-                Expanded(child: Center(child: routes[_currentScreenIndex]))
+                Expanded(child: routes[_currentScreenIndex])
               ],
             )));
   }

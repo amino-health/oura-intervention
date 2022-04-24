@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:ouraintervention/misc/Database.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key, required this.database}) : super(key: key);
 
+  final Database database;
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
           Expanded(
               child: Center(
                   child: Image.network(
@@ -26,11 +34,35 @@ class ProfileScreen extends StatelessWidget {
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                           color: Color.fromARGB(255, 241, 241, 241),
                         ),
-                        child: const Center(
-                            child: Text(
-                          'MAIL.MAIL@MAIL.MAIL\n\nUSERNAME\n\nAccount created: 2022-04-12',
-                          style: TextStyle(fontSize: 20),
-                        )),
+                        child: Column(
+                          children: [
+                            Expanded(
+                                child: Center(
+                                    child: FutureBuilder(
+                                        future: widget.database.getEmail(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String?> text) {
+                                          return Text(
+                                            text.data ?? "",
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          );
+                                        }))),
+                            Expanded(
+                                child: Center(
+                                    child: FutureBuilder(
+                                        future: widget.database
+                                            .getFieldValue('users', 'username'),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String?> text) {
+                                          return Text(
+                                            text.data ?? "",
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          );
+                                        }))),
+                          ],
+                        ),
                       ))),
               Expanded(
                   child: Padding(
