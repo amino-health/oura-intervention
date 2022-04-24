@@ -94,7 +94,9 @@ class Database {
     AuthCredential credential =
         EmailAuthProvider.credential(email: email, password: password);
     await user.reauthenticateWithCredential(credential);
-
+    DocumentReference document = firestore.collection('users').doc(user.uid);
+    await document.delete();
+    print(user.uid);
     try {
       await user.delete();
     } on FirebaseAuthException catch (e) {
@@ -121,6 +123,7 @@ class Database {
       } else if (e.code == 'too-many-requests') {
         return LoginUserStatus.tooManyRequests;
       } else {
+        print(e.code);
         return LoginUserStatus.unknownError;
       }
     } catch (e) {
@@ -160,6 +163,7 @@ class Database {
       } else if (e.code == 'wrong-password') {
         return updatePasswordStatus.passwordIncorrect;
       } else {
+        print(e.code);
         return updatePasswordStatus.unknownError;
       }
     }

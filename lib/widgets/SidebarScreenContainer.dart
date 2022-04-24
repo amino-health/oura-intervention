@@ -80,7 +80,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
                     child: Container(
                         color: Color.fromARGB(255, 143, 143, 143),
                         child: ListView(children: _createButtons()))),
-                Expanded(child: Center(child: routes[_currentScreenIndex]))
+                Expanded(child: routes[_currentScreenIndex])
               ],
             )));
   }

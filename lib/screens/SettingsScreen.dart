@@ -53,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(alignment: Alignment.center, children: [
+    return Stack(children: [
       ElevatedButton(
           onPressed: () => {
                 setState(() {
@@ -65,7 +65,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ? Container(
               width: 200,
               child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _errorText == ""
                         ? const SizedBox.shrink()
