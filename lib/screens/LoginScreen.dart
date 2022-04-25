@@ -126,9 +126,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: _signup ? 300 : 250,
                         child: DecoratedBox(
                             decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: const Color.fromARGB(
-                                        255, 130, 130, 130)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 0,
+                                    blurRadius: 1,
+                                    offset: const Offset(
+                                        -5, 5), // changes position of shadow
+                                  ),
+                                ],
                                 color: const Color.fromARGB(255, 204, 204, 204),
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(15.0))),
