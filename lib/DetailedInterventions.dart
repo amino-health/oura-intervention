@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import 'InterventionsList.dart';
+
 class DetailedIntervention extends StatelessWidget {
-  const DetailedIntervention({Key? key}) : super(key: key);
+  const DetailedIntervention({Key? key, required this.data}) : super(key: key);
+  final Intervention? data;
 
   @override
   Widget build(BuildContext context) {
@@ -14,16 +17,14 @@ class DetailedIntervention extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.favorite),
+              if (data != null) Icon(data!.icon),
               Text(
-                'Caffeine',
-                style: new TextStyle(fontSize: 20),
+                data?.name ?? "Not selected",
+                style: TextStyle(fontSize: 20),
               ),
             ],
           ),
-          Text("Caffeine is a stimulant that can worsen sleep",
-              style: new TextStyle(fontSize: 20)),
-          Text("200mg", style: new TextStyle(fontSize: 20)),
+          Text(data?.toFullDescription() ?? "", style: TextStyle(fontSize: 20)),
         ],
       ),
     );

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:ouraintervention/screens/InterventionsScreen.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/widgets/GroupedBarChart.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 
 import 'package:ouraintervention/DetailedInterventions.dart';
 import 'package:ouraintervention/InterventionsList.dart';
+import 'package:ouraintervention/widgets/scrach.dart';
 
 /// This file is used for testing and debugging widgets or screens.
 ///
@@ -17,24 +19,9 @@ List<Widget> widgetList = [
   GroupedBarChart(dataLists: exampleData),
   const OuraLoginButton(),
   const ProfilePage(),
-  const DetailedIntervention(),
-  InterventionList(
-    interventions: [
-      Intervention(
-          name: "Backhand slapped",
-          icon: Icons.back_hand,
-          description:
-              "Induces pain for 1 hour, and emotional turmoil for 12 to 72 hours on average"),
-      SupplementIntervention("125cl at 17%",
-          name: "Alcoholic beverage",
-          description: "Alcohol makes u drunk bro lool",
-          icon: Icons.wine_bar),
-      SupplementIntervention("120mg",
-          name: "caffeine",
-          description: "Speedy water",
-          icon: Icons.free_breakfast_rounded),
-    ],
-  )
+  InterventionsScreen(
+    interventions: presetInterventions,
+  ),
 ];
 
 void main() async {

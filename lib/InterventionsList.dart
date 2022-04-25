@@ -12,6 +12,8 @@ class Intervention {
     required this.description,
     required this.icon,
   });
+
+  String toFullDescription() => description;
 }
 
 class SupplementIntervention extends Intervention {
@@ -27,6 +29,9 @@ class SupplementIntervention extends Intervention {
           description: description,
           icon: icon,
         );
+
+  @override
+  String toFullDescription() => "$description Dosage: $dose";
 }
 
 class Instance<T extends Intervention> {
@@ -38,33 +43,79 @@ class Instance<T extends Intervention> {
 
 class InterventionListItem extends StatelessWidget {
   final Intervention item;
+  final void Function()? onPressed;
 
-  const InterventionListItem({Key? key, required this.item}) : super(key: key);
+  final void Function()? onPressedTrailing;
+
+  const InterventionListItem(
+      {Key? key, required this.item, this.onPressed, this.onPressedTrailing})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(item.icon),
-        Text(item.name),
-      ],
+    return Material(
+      child: GestureDetector(
+        onTap: onPressed,
+        child: ListTile(
+          leading: Icon(item.icon),
+          title: Text(item.name),
+          trailing: IconButton(
+            onPressed: onPressedTrailing,
+            icon: const Icon(Icons.add_circle_outlined, size: 16.0),
+          ),
+        ),
+      ),
     );
   }
 }
 
-class InterventionList extends StatelessWidget {
-  const InterventionList({Key? key, required this.interventions})
+class InterventionList<T> extends StatefulWidget {
+  final void Function()? onPressed;
+
+  const InterventionList(
+      {Key? key,
+      required this.interventions,
+      required this.sort,
+      required this.builder,
+      this.onPressed})
       : super(key: key);
-  final List<Intervention> interventions;
+  final List<T> interventions;
+  final int Function(T) sort;
+  final Widget Function(BuildContext, Widget, T) builder;
+
+  @override
+  State<InterventionList<T>> createState() => _InterventionListState();
+}
+
+class _InterventionListState<T> extends State<InterventionList<T>> {
+  @override
+  void didUpdateWidget(covariant InterventionList<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    widget.interventions
+        .sort((a, b) => widget.sort(a).compareTo(widget.sort(b)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemBuilder: (context, index) {
-        return InterventionListItem(
-          item: interventions[index],
-        );
+        var item = widget.interventions[index];
+        if (item is Intervention) {
+          return widget.builder(
+            context,
+            InterventionListItem(item: item, onPressed: widget.onPressed),
+            item,
+          );
+        } else if (item is Instance) {
+          return widget.builder(
+              context,
+              InterventionListItem(
+                  item: (item).intervention, onPressed: widget.onPressed),
+              item);
+        } else
+          throw UnimplementedError("default list methed item stuff");
       },
-      itemCount: interventions.length,
+      itemCount: widget.interventions.length,
     );
   }
 }
