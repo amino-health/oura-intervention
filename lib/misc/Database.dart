@@ -158,7 +158,8 @@ class Database {
             'totalSleep': doc.totalSleep,
             'lightSleep': doc.lightSleep,
             'remSleep': doc.remSleep,
-            'deepSleep': doc.deepSleep
+            'deepSleep': doc.deepSleep,
+            'date': doc.date
           })
           .then((value) => print("Sleep data uploaded"))
           .catchError((error) =>
@@ -166,12 +167,26 @@ class Database {
     }
     return true;
   }
+
   Future<String?> getEmail() async {
     User? user = authentication.currentUser;
     if (user == null) {
       return "";
     }
     return user.email;
+  }
+
+  Future<List<Map<String, dynamic>>> getSleepData() async {
+    final userid = authentication.currentUser!.uid;
+    QuerySnapshot snapshot = await firestore
+        .collection('users')
+        .doc(userid)
+        .collection('sleep')
+        .get();
+
+    List<Map<String, dynamic>> sleepData =
+        snapshot.docs.map((doc) => doc.data()).toList().cast();
+    return sleepData;
   }
 
   /// Updates the [password] of a user in the database to a new
@@ -204,7 +219,7 @@ class Database {
         return updatePasswordStatus.passwordWeak;
       }
       throw Exception(e);
-    } catch(e) {
+    } catch (e) {
       throw Exception(e);
     }
     return updatePasswordStatus.successful;

@@ -7,11 +7,12 @@ import 'package:ouraintervention/screens/Dashboard.dart';
 import 'package:ouraintervention/screens/InboxScreen.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/screens/SettingsScreen.dart';
+import 'package:ouraintervention/screens/GraphsScreen.dart';
 import 'package:ouraintervention/misc/Database.dart';
 
-
 class SidebarScreenContainer extends StatefulWidget {
-  const SidebarScreenContainer({Key? key, required this.database}) : super(key: key);
+  const SidebarScreenContainer({Key? key, required this.database})
+      : super(key: key);
 
   final Database database;
 
@@ -21,16 +22,24 @@ class SidebarScreenContainer extends StatefulWidget {
 
 class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   List<Widget> routes = [];
-  List<String> images = ['home.png', 'profile.png', 'settings.png', 'inbox.png'];
-  
+  List<String> images = [
+    'home.png',
+    'profile.png',
+    'graphs.png',
+    'settings.png',
+    'inbox.png'
+  ];
+
   @override
   void initState() {
     routes = [
       Dashboard(),
       ProfileScreen(database: widget.database),
+      GraphsScreen(database: widget.database),
       SettingsScreen(database: widget.database),
       InboxScreen()
     ];
+    super.initState();
   }
 
   int _currentScreenIndex = 0;

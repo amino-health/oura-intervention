@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
 class GroupedBarChart extends StatefulWidget {
-  const GroupedBarChart({Key? key, required this.dataLists}) : super(key: key);
+  const GroupedBarChart(
+      {Key? key,
+      required this.dataLists,
+      required this.xLabel,
+      required this.yLabel})
+      : super(key: key);
 
+  final String xLabel;
+  final String yLabel;
   final List<List<Data>> dataLists;
 
   @override
@@ -15,29 +22,18 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
 
   @override
   void initState() {
-    //TODO: Should probably add alot more constraints on the
-    //      data here like asserting that all the x-values of 
-    //      the data are the same.
-
-    //Only supports three colors at the momentF
-    assert(widget.dataLists.length < 4); 
-    super.initState();
-    List<dynamic> colors = [
-      charts.MaterialPalette.blue.shadeDefault,
-      charts.MaterialPalette.green.shadeDefault,
-      charts.MaterialPalette.teal.shadeDefault
-    ];
-    for (var i = 0; i < widget.dataLists.length; i++) {
+    for (var i = 0; i < widget.dataLists.length / 2; i++) {
       _seriesList.add(charts.Series<Data, String>(
         id: 'Data',
         domainFn: (Data data, _) => data.x,
         measureFn: (Data data, _) => data.y,
         data: widget.dataLists[i],
         fillColorFn: (Data data, _) {
-          return colors[i];
+          return charts.MaterialPalette.blue.shadeDefault;
         },
       ));
     }
+    super.initState();
   }
 
   @override
@@ -49,6 +45,16 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
           _seriesList,
           vertical: true,
           barGroupingType: charts.BarGroupingType.grouped,
+          behaviors: [
+            charts.ChartTitle(widget.xLabel,
+                behaviorPosition: charts.BehaviorPosition.bottom,
+                titleOutsideJustification:
+                    charts.OutsideJustification.middleDrawArea),
+            charts.ChartTitle(widget.yLabel,
+                behaviorPosition: charts.BehaviorPosition.start,
+                titleOutsideJustification:
+                    charts.OutsideJustification.middleDrawArea),
+          ],
         ),
       ),
     );
@@ -57,7 +63,7 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
 
 class Data {
   final String x;
-  final int y;
+  final double y;
 
   Data(this.x, this.y);
 }
