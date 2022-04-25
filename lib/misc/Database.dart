@@ -166,6 +166,42 @@ class Database {
     }
     return true;
   }
+
+  Future<bool> uploadAction(String action, String date) async {
+    final userid = authentication.currentUser!.uid;
+    if (action == "") return false; // no action
+    if (date == "") return false; //TODO: check that date is not in the future?
+
+    firestore
+        .collection('users')
+        .doc(userid)
+        .collection('actions')
+        .add({'action': action, 'date': date})
+        .then((value) => print("Action uploaded"))
+        .catchError((error) =>
+            print("Failed to upload action($action), for date($date): $error"));
+
+    return true;
+  }
+
+  Future<List<String>> getActionDates(String action) async {
+    final userid = authentication.currentUser!.uid;
+    List<String> dates = [];
+    await firestore
+        .collection('users')
+        .doc(userid)
+        .collection('actions')
+        .where('action', isEqualTo: action)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      snapshot.docs.forEach((element) {
+        dates.add(element['date']);
+      });
+    });
+    print(dates);
+    return dates;
+  }
+
   Future<String?> getEmail() async {
     User? user = authentication.currentUser;
     if (user == null) {
@@ -204,7 +240,7 @@ class Database {
         return updatePasswordStatus.passwordWeak;
       }
       throw Exception(e);
-    } catch(e) {
+    } catch (e) {
       throw Exception(e);
     }
     return updatePasswordStatus.successful;
