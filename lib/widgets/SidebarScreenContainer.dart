@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
 import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 import 'package:ouraintervention/screens/Dashboard.dart';
-import 'package:ouraintervention/screens/InboxScreen.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/screens/SettingsScreen.dart';
 import 'package:ouraintervention/screens/GraphsScreen.dart';
