@@ -18,8 +18,7 @@ final redirectUri = Uri(
   port: currentUri.port,
   path: '/index.html',
 );
-final authUrl =
-    'https://cloud.ouraring.com/oauth/authorize?client_id=$clientId&state=$clientSecret&redirect_uri=$redirectUri&response_type=token';
+final authUrl = 'https://cloud.ouraring.com/oauth/authorize?client_id=$clientId&state=$clientSecret&redirect_uri=$redirectUri&response_type=token';
 
 class OuraLoginButton extends StatefulWidget {
   const OuraLoginButton({Key? key, required this.database}) : super(key: key);
@@ -40,10 +39,7 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
     final receivedUri = Uri.parse(data);
 
     /// Parse fragment string to token
-    var token = receivedUri.fragment
-        .split('&')
-        .firstWhere((e) => e.startsWith('access_token='))
-        .substring('access_token='.length);
+    var token = receivedUri.fragment.split('&').firstWhere((e) => e.startsWith('access_token=')).substring('access_token='.length);
 
     if (popupWindow != null) {
       popupWindow.close();
@@ -55,8 +51,7 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
 
   /// TODO: Documentation for function
   void _authenticate() {
-    html.WindowBase popupWindow = html.window.open(authUrl,
-        "Oura authentication", "width=800, height=900, scrollbars=yes");
+    html.WindowBase popupWindow = html.window.open(authUrl, "Oura authentication", "width=800, height=900, scrollbars=yes");
 
     setState(() {
       _loginButtonText = 'Waiting For Login...';
@@ -71,16 +66,11 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
           _loginButtonText = 'Oura Ring Connected';
         });
         var token = await _login(event.data, popupWindow);
-        var url = Uri.parse(
-            'https://api.ouraring.com/v1/sleep?start=2020-01-01&end=2022-04-22&access_token=$token');
-        var response = await http.get(url, headers: {
-          "Accept": "application/json",
-          "Access-Control-Allow-Origin": "*"
-        });
+        var url = Uri.parse('https://api.ouraring.com/v1/sleep?start=2020-01-01&end=2022-04-22&access_token=$token');
+        var response = await http.get(url, headers: {"Accept": "application/json", "Access-Control-Allow-Origin": "*"});
 
         // Decode the string from HTTP request to API
-        Map<String, dynamic> sleepJson =
-            jsonDecode(response.body) as Map<String, dynamic>;
+        Map<String, dynamic> sleepJson = jsonDecode(response.body) as Map<String, dynamic>;
 
         // Translate it so that Database method can be used to upload
         List<SleepData> sleepList = [];
@@ -89,6 +79,7 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
         }
 
         widget.database.uploadOuraData(sleepList);
+        widget.database.getActionDates('run');
       }
     });
   }

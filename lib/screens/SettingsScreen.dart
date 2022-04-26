@@ -19,10 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final newPasswordController = TextEditingController();
 
   void submitNewPassword() async {
-    updatePasswordStatus status = await widget.database.updatePassword(
-        emailController.text,
-        oldPasswordController.text,
-        newPasswordController.text);
+    updatePasswordStatus status = await widget.database.updatePassword(emailController.text, oldPasswordController.text, newPasswordController.text);
     switch (status) {
       case updatePasswordStatus.successful:
         return setState(() {
@@ -64,46 +61,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _showInputFields
           ? Container(
               width: 200,
-              child: Column(
-                  children: [
-                    _errorText == ""
-                        ? const SizedBox.shrink()
-                        : Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: Color.fromARGB(255, 212, 128, 122),
-                            ),
-                            child: Center(child: Text(_errorText)),
-                            width: 300,
-                            height: 30,
-                          ),
-                    TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Email',
-                          fillColor: Colors.white,
-                          filled: true),
-                    ),
-                    TextField(
-                      controller: oldPasswordController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Old Password',
-                          fillColor: Colors.white,
-                          filled: true),
-                    ),
-                    TextField(
-                      controller: newPasswordController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'New Password',
-                          fillColor: Colors.white,
-                          filled: true),
-                    ),
-                    ElevatedButton(
-                        onPressed: submitNewPassword, child: Text('Submit'))
-                  ]))
+              child: Column(children: [
+                _errorText == ""
+                    ? const SizedBox.shrink()
+                    : Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Color.fromARGB(255, 212, 128, 122),
+                        ),
+                        child: Center(child: Text(_errorText)),
+                        width: 300,
+                        height: 30,
+                      ),
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Email', fillColor: Colors.white, filled: true),
+                ),
+                TextField(
+                  controller: oldPasswordController,
+                  decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Old Password', fillColor: Colors.white, filled: true),
+                ),
+                TextField(
+                  controller: newPasswordController,
+                  decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'New Password', fillColor: Colors.white, filled: true),
+                ),
+                ElevatedButton(onPressed: submitNewPassword, child: Text('Submit'))
+              ]))
           : const SizedBox.shrink()
     ]);
   }

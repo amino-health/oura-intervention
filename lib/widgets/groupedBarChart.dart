@@ -2,12 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
 class GroupedBarChart extends StatefulWidget {
-  const GroupedBarChart(
-      {Key? key,
-      required this.dataLists,
-      required this.xLabel,
-      required this.yLabel})
-      : super(key: key);
+  const GroupedBarChart({Key? key, required this.dataLists, required this.xLabel, required this.yLabel}) : super(key: key);
 
   final String xLabel;
   final String yLabel;
@@ -47,13 +42,9 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
           barGroupingType: charts.BarGroupingType.grouped,
           behaviors: [
             charts.ChartTitle(widget.xLabel,
-                behaviorPosition: charts.BehaviorPosition.bottom,
-                titleOutsideJustification:
-                    charts.OutsideJustification.middleDrawArea),
+                behaviorPosition: charts.BehaviorPosition.bottom, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
             charts.ChartTitle(widget.yLabel,
-                behaviorPosition: charts.BehaviorPosition.start,
-                titleOutsideJustification:
-                    charts.OutsideJustification.middleDrawArea),
+                behaviorPosition: charts.BehaviorPosition.start, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
           ],
         ),
       ),

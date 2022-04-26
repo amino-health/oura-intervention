@@ -8,11 +8,11 @@ import 'package:ouraintervention/screens/InboxScreen.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/screens/SettingsScreen.dart';
 import 'package:ouraintervention/screens/GraphsScreen.dart';
+import 'package:ouraintervention/screens/ActionScreen.dart';
 import 'package:ouraintervention/misc/Database.dart';
 
 class SidebarScreenContainer extends StatefulWidget {
-  const SidebarScreenContainer({Key? key, required this.database})
-      : super(key: key);
+  const SidebarScreenContainer({Key? key, required this.database}) : super(key: key);
 
   final Database database;
 
@@ -22,22 +22,17 @@ class SidebarScreenContainer extends StatefulWidget {
 
 class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   List<Widget> routes = [];
-  List<String> images = [
-    'home.png',
-    'profile.png',
-    'graphs.png',
-    'settings.png',
-    'inbox.png'
-  ];
+  List<String> images = ['home.png', 'profile.png', 'running.png', 'graphs.png', 'settings.png', 'inbox.png'];
 
   @override
   void initState() {
     routes = [
       Dashboard(),
       ProfileScreen(database: widget.database),
+      ActionScreen(database: widget.database),
       GraphsScreen(database: widget.database),
       SettingsScreen(database: widget.database),
-      InboxScreen()
+      InboxScreen(),
     ];
     super.initState();
   }
@@ -61,10 +56,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
               )
             },
             child: Image.asset('../../assets/images/' + images[i]),
-            style: ElevatedButton.styleFrom(
-                side: const BorderSide(width: 1.0),
-                fixedSize: Size(buttonSize, buttonSize),
-                primary: Colors.white),
+            style: ElevatedButton.styleFrom(side: const BorderSide(width: 1.0), fixedSize: Size(buttonSize, buttonSize), primary: Colors.white),
           )));
     }
     return buttons;
@@ -86,9 +78,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
               children: [
                 SizedBox(
                     width: buttonSize + 2 * padding,
-                    child: Container(
-                        color: Color.fromARGB(255, 143, 143, 143),
-                        child: ListView(children: _createButtons()))),
+                    child: Container(color: Color.fromARGB(255, 143, 143, 143), child: ListView(children: _createButtons()))),
                 Expanded(child: routes[_currentScreenIndex])
               ],
             )));

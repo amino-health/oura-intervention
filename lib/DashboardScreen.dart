@@ -19,15 +19,20 @@ class _DashboardState extends State<Dashboard> {
   // User login state.
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
+    return Scaffold(
         appBar: AppBar(
             title: Text(
               widget.title,
               style: const TextStyle(fontSize: 25.0, color: Colors.white),
             ),
             centerTitle: true,
-            actions: <Widget>[OuraLoginButton(database: widget.database,)]),
-        body: Center(child: Text('TODO'),
+            actions: <Widget>[
+              OuraLoginButton(
+                database: widget.database,
+              )
+            ]),
+        body: Center(
+          child: Text('TODO'),
         ));
   }
 }
