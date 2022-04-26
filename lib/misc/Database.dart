@@ -157,13 +157,36 @@ class Database {
     return true;
   }
 
+  Future<void> uploadMessage(String userId, String message, bool coach) async {
+    assert(userId != "" && message != "");
+    FieldValue timeStamp = FieldValue.serverTimestamp();
+    firestore
+        .collection('users')
+        .doc(userId)
+        .collection('messages')
+        .add({'message': message, 'timeStamp': timeStamp, 'coach': coach})
+        .then((value) => print("Sleep data uploaded"))
+        .catchError((error) => print("Failed to upload sleep data for ${timeStamp}: $error"));
+  }
+
+  Future<List<Map<String, dynamic>>> getMessages(String userId) async {
+    assert(userId != "");
+    List<Map<String, dynamic>> messages = [];
+    await firestore.collection('users').doc(userId).collection('messages').orderBy('timeStamp').get().then((QuerySnapshot snapshot) {
+      for (var element in snapshot.docs) {
+        messages.add({'message': element['message'], 'coach': element['coach']});
+      }
+    });
+    return messages;
+  }
+
   Future<List<String>> getActionDates(String action) async {
     final userid = authentication.currentUser!.uid;
     List<String> dates = [];
     await firestore.collection('users').doc(userid).collection('actions').where('action', isEqualTo: action).get().then((QuerySnapshot snapshot) {
-      snapshot.docs.forEach((element) {
+      for (var element in snapshot.docs) {
         dates.add(element['date']);
-      });
+      }
     });
     return dates;
   }
