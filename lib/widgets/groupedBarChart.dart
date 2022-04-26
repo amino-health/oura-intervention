@@ -16,11 +16,11 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
   @override
   void initState() {
     //TODO: Should probably add alot more constraints on the
-    //      data here like asserting that all the x-values of 
+    //      data here like asserting that all the x-values of
     //      the data are the same.
 
     //Only supports three colors at the momentF
-    assert(widget.dataLists.length < 4); 
+    assert(widget.dataLists.length < 4);
     super.initState();
     List<dynamic> colors = [
       charts.MaterialPalette.blue.shadeDefault,

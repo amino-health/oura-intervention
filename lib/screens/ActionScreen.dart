@@ -1,21 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key, required this.database}) : super(key: key);
+class ActionScreen extends StatefulWidget {
+  const ActionScreen({Key? key, required this.database}) : super(key: key);
 
   final Database database;
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ActionScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ActionScreen> {
+  final actionController = TextEditingController();
+  final dateController = TextEditingController();
+
+  void addAction() {
+    widget.database.uploadAction(actionController.text, dateController.text);
+  }
+
+  Widget generateTextField(TextEditingController controller, String labelText, bool obscureText, Icon icon) {
+    return TextField(
+        controller: controller,
+        decoration: InputDecoration(
+            prefixIcon: icon,
+            focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
+            border: const OutlineInputBorder(),
+            labelText: labelText,
+            fillColor: Colors.white,
+            filled: true),
+        obscureText: obscureText);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
       Expanded(
-          child: Center(child: Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3uaMgPeSlemqzxsUKJGsLNBIK6AY7S5YaLg&usqp=CAU'))),
+          child: Center(
+              child: ElevatedButton(
+        onPressed: addAction,
+        child: const Text("Add Action"),
+      ))),
       Expanded(
           child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,26 +55,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     child: Column(
                       children: [
-                        Expanded(
-                            child: Center(
-                                child: FutureBuilder(
-                                    future: widget.database.getEmail(),
-                                    builder: (BuildContext context, AsyncSnapshot<String?> text) {
-                                      return Text(
-                                        text.data ?? "",
-                                        style: const TextStyle(fontSize: 20),
-                                      );
-                                    }))),
-                        Expanded(
-                            child: Center(
-                                child: FutureBuilder(
-                                    future: widget.database.getFieldValue('users', 'username'),
-                                    builder: (BuildContext context, AsyncSnapshot<String?> text) {
-                                      return Text(
-                                        text.data ?? "",
-                                        style: const TextStyle(fontSize: 20),
-                                      );
-                                    }))),
+                        Expanded(child: Center(child: generateTextField(actionController, "Action", false, Icon(Icons.email_sharp)))),
+                        Expanded(child: Center(child: generateTextField(dateController, "Date", false, Icon(Icons.email_sharp)))),
                       ],
                     ),
                   ))),

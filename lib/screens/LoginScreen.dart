@@ -21,8 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _signup = false;
 
   void login() async {
-    LoginUserStatus loginUserStatus = await widget.database
-        .loginUser(emailController.text, passwordController.text);
+    LoginUserStatus loginUserStatus = await widget.database.loginUser(emailController.text, passwordController.text);
     switch (loginUserStatus) {
       case LoginUserStatus.successful:
         setState(() {
@@ -53,8 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void signup() async {
-    AddUserStatus addUserStatus = await widget.database.addUser(
-        emailController.text, passwordController.text, usernameController.text);
+    AddUserStatus addUserStatus = await widget.database.addUser(emailController.text, passwordController.text, usernameController.text);
     switch (addUserStatus) {
       case AddUserStatus.successful:
         setState(() {
@@ -84,15 +82,12 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Widget generateTextField(TextEditingController controller, String labelText,
-      bool obscureText, Icon icon) {
+  Widget generateTextField(TextEditingController controller, String labelText, bool obscureText, Icon icon) {
     return TextField(
         controller: controller,
         decoration: InputDecoration(
             prefixIcon: icon,
-            focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(
-                    color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
+            focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
             border: const OutlineInputBorder(),
             labelText: labelText,
             fillColor: Colors.white,
@@ -106,9 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return _loggedIn
         ? SidebarScreenContainer(database: widget.database)
         : MaterialApp(
-            theme: ThemeData(
-                scaffoldBackgroundColor:
-                    const Color.fromARGB(255, 230, 230, 230)),
+            theme: ThemeData(scaffoldBackgroundColor: const Color.fromARGB(255, 230, 230, 230)),
             home: Scaffold(
                 body: SafeArea(
                     child: Center(
@@ -126,59 +119,41 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: _signup ? 300 : 250,
                         child: DecoratedBox(
                             decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: const Color.fromARGB(
-                                        255, 130, 130, 130)),
+                                border: Border.all(color: const Color.fromARGB(255, 130, 130, 130)),
                                 color: const Color.fromARGB(255, 204, 204, 204),
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(15.0))),
+                                borderRadius: const BorderRadius.all(Radius.circular(15.0))),
                             child: Padding(
                               padding: const EdgeInsets.all(15.0),
                               child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
                                   _errorText == ""
                                       ? const SizedBox.shrink()
                                       : Container(
                                           decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
+                                            borderRadius: BorderRadius.circular(5),
                                             color: Colors.red,
                                           ),
-                                          child:
-                                              Center(child: Text(_errorText)),
+                                          child: Center(child: Text(_errorText)),
                                           height: 40,
                                         ),
                                   _signup
-                                      ? generateTextField(
-                                          usernameController,
-                                          'Username',
-                                          false,
-                                          const Icon(
-                                              Icons.account_circle_sharp))
+                                      ? generateTextField(usernameController, 'Username', false, const Icon(Icons.account_circle_sharp))
                                       : const SizedBox.shrink(),
-                                  generateTextField(emailController, 'Email',
-                                      false, const Icon(Icons.email_sharp)),
-                                  generateTextField(passwordController,
-                                      'Password', true, const Icon(Icons.lock)),
+                                  generateTextField(emailController, 'Email', false, const Icon(Icons.email_sharp)),
+                                  generateTextField(passwordController, 'Password', true, const Icon(Icons.lock)),
                                   Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
                                       _signup
                                           ? ElevatedButton(
                                               onPressed: signup,
                                               child: const Text('Signup'),
-                                              style: ElevatedButton.styleFrom(
-                                                  primary: Colors.green,
-                                                  onPrimary: Colors.black))
+                                              style: ElevatedButton.styleFrom(primary: Colors.green, onPrimary: Colors.black))
                                           : ElevatedButton(
                                               onPressed: login,
                                               child: const Text('Login'),
-                                              style: ElevatedButton.styleFrom(
-                                                  primary: Colors.green,
-                                                  onPrimary: Colors.black)),
+                                              style: ElevatedButton.styleFrom(primary: Colors.green, onPrimary: Colors.black)),
                                     ],
                                   ),
                                   _signup
@@ -191,8 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   },
                                                 )
                                               },
-                                          child: const Text(
-                                              'Already have an account? Log in'))
+                                          child: const Text('Already have an account? Log in'))
                                       : TextButton(
                                           onPressed: () => {
                                                 setState(
@@ -202,8 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   },
                                                 )
                                               },
-                                          child: const Text(
-                                              'Have no account? Sign up'))
+                                          child: const Text('Have no account? Sign up'))
                                 ],
                               ),
                             ))))

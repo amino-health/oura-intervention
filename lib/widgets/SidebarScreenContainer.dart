@@ -7,8 +7,8 @@ import 'package:ouraintervention/screens/Dashboard.dart';
 import 'package:ouraintervention/screens/InboxScreen.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/screens/SettingsScreen.dart';
+import 'package:ouraintervention/screens/ActionScreen.dart';
 import 'package:ouraintervention/misc/Database.dart';
-
 
 class SidebarScreenContainer extends StatefulWidget {
   const SidebarScreenContainer({Key? key, required this.database}) : super(key: key);
@@ -21,15 +21,16 @@ class SidebarScreenContainer extends StatefulWidget {
 
 class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   List<Widget> routes = [];
-  List<String> images = ['home.png', 'profile.png', 'settings.png', 'inbox.png'];
-  
+  List<String> images = ['home.png', 'profile.png', 'settings.png', 'inbox.png', 'profile.png'];
+
   @override
   void initState() {
     routes = [
       Dashboard(),
       ProfileScreen(database: widget.database),
       SettingsScreen(database: widget.database),
-      InboxScreen()
+      InboxScreen(),
+      ActionScreen(database: widget.database),
     ];
   }
 
@@ -52,10 +53,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
               )
             },
             child: Image.asset('../../assets/images/' + images[i]),
-            style: ElevatedButton.styleFrom(
-                side: const BorderSide(width: 1.0),
-                fixedSize: Size(buttonSize, buttonSize),
-                primary: Colors.white),
+            style: ElevatedButton.styleFrom(side: const BorderSide(width: 1.0), fixedSize: Size(buttonSize, buttonSize), primary: Colors.white),
           )));
     }
     return buttons;
@@ -77,9 +75,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
               children: [
                 SizedBox(
                     width: buttonSize + 2 * padding,
-                    child: Container(
-                        color: Color.fromARGB(255, 143, 143, 143),
-                        child: ListView(children: _createButtons()))),
+                    child: Container(color: Color.fromARGB(255, 143, 143, 143), child: ListView(children: _createButtons()))),
                 Expanded(child: routes[_currentScreenIndex])
               ],
             )));
