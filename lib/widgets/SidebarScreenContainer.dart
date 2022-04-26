@@ -22,7 +22,7 @@ class SidebarScreenContainer extends StatefulWidget {
 
 class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   List<Widget> routes = [];
-  List<String> images = ['home.png', 'profile.png', 'running.png', 'graphs.png', 'settings.png', 'inbox.png'];
+  List<String> images = ['home.png', 'profile.png', 'running.png', 'graphs.png', 'settings.png'];
 
   @override
   void initState() {
@@ -32,7 +32,6 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
       ActionScreen(database: widget.database),
       GraphsScreen(database: widget.database),
       SettingsScreen(database: widget.database),
-      InboxScreen(),
     ];
     super.initState();
   }
