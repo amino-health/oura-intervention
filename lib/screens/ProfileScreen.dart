@@ -15,7 +15,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<List<Widget>> createMessageContainers() async {
     List<Widget> containers = [];
     String userId = widget.database.authentication.currentUser!.uid;
-    List<Map<String, dynamic>> messages = await widget.database.getMessages(userId); //FIX
+    List<Map<String, dynamic>> messages =
+        await widget.database.getMessages(userId); //FIX
     for (var message in messages) {
       Color color = message['coach'] ? Colors.white : Colors.blue;
       containers.add(Align(
@@ -30,7 +31,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   message['message'],
                   style: const TextStyle(fontSize: 10.0),
                 ))),
-            decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.all(Radius.circular(15.0))),
+            decoration: BoxDecoration(
+                color: color,
+                borderRadius: const BorderRadius.all(Radius.circular(15.0))),
           )));
     }
     return containers;
@@ -43,12 +46,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: <Widget>[
         Column(
           children: [
-            Center(child: Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3uaMgPeSlemqzxsUKJGsLNBIK6AY7S5YaLg&usqp=CAU')),
+            Center(
+                child: Image.network(
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3uaMgPeSlemqzxsUKJGsLNBIK6AY7S5YaLg&usqp=CAU')),
             Expanded(
                 child: Center(
                     child: FutureBuilder(
                         future: widget.database.getEmail(),
-                        builder: (BuildContext context, AsyncSnapshot<String?> text) {
+                        builder: (BuildContext context,
+                            AsyncSnapshot<String?> text) {
                           return Text(
                             text.data ?? "",
                             style: const TextStyle(fontSize: 20),
@@ -57,8 +63,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Expanded(
                 child: Center(
                     child: FutureBuilder(
-                        future: widget.database.getFieldValue('users', 'username'),
-                        builder: (BuildContext context, AsyncSnapshot<String?> text) {
+                        future:
+                            widget.database.getFieldValue('users', 'username'),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<String?> text) {
                           return Text(
                             text.data ?? "",
                             style: const TextStyle(fontSize: 20),
@@ -74,10 +82,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: const EdgeInsets.all(20.0),
                   child: FutureBuilder(
                       future: createMessageContainers(),
-                      builder: (BuildContext context, AsyncSnapshot<List<Widget>> snapshot) {
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<Widget>> snapshot) {
                         if (snapshot.hasData) {
                           List<Widget>? messageContainers = snapshot.data;
                           return ListView.builder(
+                              controller: ScrollController(),
                               itemCount: messageContainers!.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return messageContainers[index];
@@ -88,7 +98,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           return const LoadingWidget();
                         }
                       })),
-              decoration: const BoxDecoration(color: Color.fromARGB(255, 204, 204, 204), borderRadius: BorderRadius.all(Radius.circular(15.0)))),
+              decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 204, 204, 204),
+                  borderRadius: BorderRadius.all(Radius.circular(15.0)))),
         )),
       ],
     );
