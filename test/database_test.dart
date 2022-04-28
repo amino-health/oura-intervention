@@ -36,4 +36,34 @@ void main() {
       ]);
     });
   });
+
+  group('getFieldValue()', () {
+    test('Test field value from non-existing collection', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth());
+      try {
+        await database.getFieldValue('nonExisting', 'nonExisting');
+        expectNotReached();
+      } catch (e) {
+        expectReached();
+      }
+    });
+
+    test('Test field value from non-existing field', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth());
+      database.firestore.collection('testCollection').doc('someId').set({'testdata': 1, 'testdata2': 2});
+      try {
+        await database.getFieldValue('testCollection', 'nonExisting');
+        expectNotReached();
+      } catch (e) {
+        expectReached();
+      }
+    });
+
+    test('Add field value to collection and test fetching it', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(signedIn: true, mockUser: mockUser));
+      database.firestore.collection('testCollection').doc(mockUser.uid).set({'testdata': "1", 'testdata2': "2"});
+      expect(await database.getFieldValue('testCollection', 'testdata'), "1");
+      expect(await database.getFieldValue('testCollection', 'testdata2'), "2");
+    });
+  });
 }
