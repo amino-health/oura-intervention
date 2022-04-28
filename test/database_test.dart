@@ -71,4 +71,19 @@ void main() {
     /// Unfortunately 'createUserWithEmailAndPassword' does not return any error
     /// codes for the fake authentication, which means it can't be tested properly
   });
+
+  group('deleteUser()', () {
+    test('Delete non-existing user', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth());
+      expect(await database.deleteUser('nonexisting', 'nonexisting'), false);
+    });
+
+    test('Add user, delete it and check that the users data is erased', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(mockUser: mockUser));
+      await database.addUser(mockUser.email!, 'password', 'username');
+      expect(await database.getCollectionData('users'), isNot([]));
+      expect(await database.deleteUser(mockUser.email!, 'password'), true);
+      expect(await database.getCollectionData('users'), []);
+    });
+  });
 }
