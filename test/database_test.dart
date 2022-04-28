@@ -113,7 +113,7 @@ void main() {
 
   group('uploadOuraData()', () {
     test('Upload empty data, expect return false', () async {
-      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth());
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(signedIn: true, mockUser: mockUser));
       expect(await database.uploadOuraData([]), false);
     });
 

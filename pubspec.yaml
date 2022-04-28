@@ -50,7 +50,8 @@ dev_dependencies:
   charts_flutter:
   cloud_firestore:
   firebase_auth:
-
+  fake_cloud_firestore:
+  firebase_auth_mocks:
   # Used for the login screen to the full app.
   flutter_login: ^3.2.0
 
