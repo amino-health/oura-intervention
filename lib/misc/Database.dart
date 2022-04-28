@@ -2,13 +2,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ouraintervention/objects/SleepData.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 enum AddUserStatus { successful, emailBusy, emailInvalid, passwordWeak, tooManyRequests, unknownError }
 
 enum LoginUserStatus { successful, emailInvalid, userNotFound, passwordInvalid, tooManyRequests, unknownError }
 
-enum updatePasswordStatus { successful, emailInvalid, passwordIncorrect, unknownError, passwordWeak }
+enum UpdatePasswordStatus { successful, emailInvalid, passwordIncorrect, unknownError, passwordWeak }
 
 class Database {
   Database(this.firestore, this.authentication);
@@ -27,7 +26,7 @@ class Database {
   /// Returns the value of a field given a [collection] and a [field]
   Future<String> getFieldValue(String collection, String field) async {
     String uid = authentication.currentUser!.uid;
-    String fieldValue = await firestore.collection('users').doc(uid).get().then((value) {
+    String fieldValue = await firestore.collection(collection).doc(uid).get().then((value) {
       return value.data()![field];
     });
     return fieldValue;
@@ -228,7 +227,7 @@ class Database {
 
   /// Updates the [password] of a user in the database to a new
   /// password given the [email] of the user and a [newPassword].
-  Future<updatePasswordStatus> updatePassword(String email, String password, String newPassword) async {
+  Future<UpdatePasswordStatus> updatePassword(String email, String password, String newPassword) async {
     final user = authentication.currentUser;
     if (user == null) {
       throw Exception('User is null');
@@ -238,12 +237,12 @@ class Database {
       await user.reauthenticateWithCredential(credential);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
-        return updatePasswordStatus.emailInvalid;
+        return UpdatePasswordStatus.emailInvalid;
       } else if (e.code == 'wrong-password') {
-        return updatePasswordStatus.passwordIncorrect;
+        return UpdatePasswordStatus.passwordIncorrect;
       } else {
         print(e.code);
-        return updatePasswordStatus.unknownError;
+        return UpdatePasswordStatus.unknownError;
       }
     }
 
@@ -251,12 +250,12 @@ class Database {
       await user.updatePassword(newPassword);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        return updatePasswordStatus.passwordWeak;
+        return UpdatePasswordStatus.passwordWeak;
       }
       throw Exception(e);
     } catch (e) {
       throw Exception(e);
     }
-    return updatePasswordStatus.successful;
+    return UpdatePasswordStatus.successful;
   }
 }
