@@ -91,4 +91,22 @@ void main() {
     /// Unfortunately 'signInWithEmailAndPassword' does not return any error
     /// codes for the fake authentication, which means it can't be tested properly
   });
+
+  group('logoutUser()', () {
+    test('Check that logging out when there is no logged in user does not crash program', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth());
+      try {
+        database.logoutUser();
+        expectReached();
+      } catch (error) {
+        expectNotReached();
+      }
+    });
+    test('Check that there is no currentUser after logout', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(signedIn: true, mockUser: mockUser));
+      expect(database.authentication.currentUser, mockUser);
+      database.logoutUser();
+      expect(database.authentication.currentUser, null);
+    });
+  });
 }
