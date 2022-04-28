@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
 import 'package:ouraintervention/widgets/SidebarScreenContainer.dart';
+import 'package:ouraintervention/objects/Globals.dart' as globals;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key, required this.database}) : super(key: key);
@@ -17,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
 
   String _errorText = "";
-  bool _loggedIn = false;
+  bool _loggedIn = true;
   bool _signup = false;
 
   void login() async {
@@ -101,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return _loggedIn
         ? SidebarScreenContainer(database: widget.database)
         : MaterialApp(
-            theme: ThemeData(scaffoldBackgroundColor: const Color.fromARGB(255, 230, 230, 230)),
+            theme: ThemeData(scaffoldBackgroundColor: globals.grey),
             home: Scaffold(
                 body: SafeArea(
                     child: Center(
@@ -118,14 +119,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: 350,
                         height: _signup ? 300 : 250,
                         child: DecoratedBox(
-                            decoration: BoxDecoration(boxShadow: [
+                            decoration: BoxDecoration(boxShadow: const [
                               BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
+                                color: Colors.grey,
                                 spreadRadius: 0,
                                 blurRadius: 1,
-                                offset: const Offset(-5, 5), // changes position of shadow
+                                offset: Offset(-5, 5), // changes position of shadow
                               ),
-                            ], color: const Color.fromARGB(255, 204, 204, 204), borderRadius: const BorderRadius.all(Radius.circular(15.0))),
+                            ], color: globals.mainColor, borderRadius: const BorderRadius.all(Radius.circular(15.0))),
                             child: Padding(
                               padding: const EdgeInsets.all(15.0),
                               child: Column(
