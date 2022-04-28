@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
+import 'package:ouraintervention/objects/Globals.dart' as globals;
 
 class ActionScreen extends StatefulWidget {
   const ActionScreen({Key? key, required this.database}) : super(key: key);
@@ -13,9 +14,32 @@ class ActionScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ActionScreen> {
   final actionController = TextEditingController();
   final dateController = TextEditingController();
+  final currentDate = DateTime.now().toString().substring(0, DateTime.now().toString().length - 13);
+
+  bool isValidDate(String date) {
+    List<String> split = date.split('-');
+
+    if (split.length != 3) {
+      return false;
+    }
+
+    if (split[0].length == 4 && split[1].length == 2 && split[2].length == 2 && int.tryParse(date.replaceAll('-', '')) != null) {
+      return true;
+    }
+
+    return false;
+  }
 
   void addAction() {
-    widget.database.uploadAction(actionController.text, dateController.text);
+    String date = dateController.text;
+    if (date.isEmpty) {
+      date = currentDate;
+    } else if (!isValidDate(date)) {
+      print("Invalid Date!");
+      return;
+    }
+
+    widget.database.uploadAction(actionController.text, date);
   }
 
   Widget generateTextField(TextEditingController controller, String labelText, bool obscureText, Icon icon) {
@@ -23,7 +47,7 @@ class _ProfileScreenState extends State<ActionScreen> {
         controller: controller,
         decoration: InputDecoration(
             prefixIcon: icon,
-            focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
+            focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: globals.dark, width: 2.0)),
             border: const OutlineInputBorder(),
             labelText: labelText,
             fillColor: Colors.white,
@@ -33,49 +57,50 @@ class _ProfileScreenState extends State<ActionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
-      Expanded(
-          child: Center(
-              child: ElevatedButton(
-        onPressed: addAction,
-        child: const Text("Add Action"),
-      ))),
-      Expanded(
-          child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-              child: Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      color: Color.fromARGB(255, 241, 241, 241),
-                    ),
-                    child: Column(
-                      children: [
-                        Expanded(child: Center(child: generateTextField(actionController, "Action", false, Icon(Icons.email_sharp)))),
-                        Expanded(child: Center(child: generateTextField(dateController, "Date", false, Icon(Icons.email_sharp)))),
-                      ],
-                    ),
-                  ))),
-          Expanded(
-              child: Padding(
-                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 5),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      color: Color.fromARGB(255, 241, 241, 241),
-                    ),
-                    child: const Center(
-                        child: Text(
-                      'Other information',
-                      style: TextStyle(fontSize: 20),
-                    )),
-                  ))),
-        ],
-      ))
-    ]);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(
+            child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    color: globals.grey,
+                  ),
+                  child: Column(
+                    children: [
+                      Center(
+                          child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: generateTextField(actionController, "Action", false, const Icon(Icons.email_sharp)))),
+                      Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: generateTextField(dateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
+                      Center(
+                          child: ElevatedButton(
+                        onPressed: addAction,
+                        child: const Text("Add Action"),
+                      ))
+                    ],
+                  ),
+                ))),
+        Expanded(
+            child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    color: globals.grey,
+                  ),
+                  child: const Center(
+                      child: Text(
+                    'Other information',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                ))),
+      ],
+    );
   }
 }
