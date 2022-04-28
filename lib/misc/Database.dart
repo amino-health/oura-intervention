@@ -4,31 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ouraintervention/objects/SleepData.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-enum AddUserStatus {
-  successful,
-  emailBusy,
-  emailInvalid,
-  passwordWeak,
-  tooManyRequests,
-  unknownError
-}
+enum AddUserStatus { successful, emailBusy, emailInvalid, passwordWeak, tooManyRequests, unknownError }
 
-enum LoginUserStatus {
-  successful,
-  emailInvalid,
-  userNotFound,
-  passwordInvalid,
-  tooManyRequests,
-  unknownError
-}
+enum LoginUserStatus { successful, emailInvalid, userNotFound, passwordInvalid, tooManyRequests, unknownError }
 
-enum updatePasswordStatus {
-  successful,
-  emailInvalid,
-  passwordIncorrect,
-  unknownError,
-  passwordWeak
-}
+enum updatePasswordStatus { successful, emailInvalid, passwordIncorrect, unknownError, passwordWeak }
 
 class Database {
   Database(this.firestore, this.authentication);
@@ -47,20 +27,17 @@ class Database {
   /// Returns the value of a field given a [collection] and a [field]
   Future<String> getFieldValue(String collection, String field) async {
     String uid = authentication.currentUser!.uid;
-    String fieldValue =
-        await firestore.collection('users').doc(uid).get().then((value) {
+    String fieldValue = await firestore.collection('users').doc(uid).get().then((value) {
       return value.data()![field];
     });
     return fieldValue;
   }
 
   /// Adds a users [email] and [password] to the database.
-  Future<AddUserStatus> addUser(
-      String email, String password, String username) async {
+  Future<AddUserStatus> addUser(String email, String password, String username) async {
     try {
       // TODO: send this to coach
-      UserCredential credential = await authentication
-          .createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential credential = await authentication.createUserWithEmailAndPassword(email: email, password: password);
       String uid = credential.user!.uid;
       firestore.collection('users').doc(uid).set({
         'admin': false,
@@ -92,8 +69,7 @@ class Database {
       return false;
     }
 
-    AuthCredential credential =
-        EmailAuthProvider.credential(email: email, password: password);
+    AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
     await user.reauthenticateWithCredential(credential);
     DocumentReference document = firestore.collection('users').doc(user.uid);
     await document.delete();
@@ -111,8 +87,7 @@ class Database {
   Future<LoginUserStatus> loginUser(String email, String password) async {
     UserCredential credential;
     try {
-      credential = await authentication.signInWithEmailAndPassword(
-          email: email, password: password);
+      credential = await authentication.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         return LoginUserStatus.emailInvalid;
@@ -161,8 +136,7 @@ class Database {
             'date': doc.date
           })
           .then((value) => print("Sleep data uploaded"))
-          .catchError((error) =>
-              print("Failed to upload sleep data for ${doc.date}: $error"));
+          .catchError((error) => print("Failed to upload sleep data for ${doc.date}: $error"));
     }
     return true;
   }
@@ -178,8 +152,7 @@ class Database {
         .collection('actions')
         .add({'action': action, 'date': date})
         .then((value) => print("Action uploaded"))
-        .catchError((error) =>
-            print("Failed to upload action($action), for date($date): $error"));
+        .catchError((error) => print("Failed to upload action($action), for date($date): $error"));
 
     return true;
   }
@@ -189,7 +162,7 @@ class Database {
     List<String> actions = [];
     await firestore.collection('userActions').doc(userid).collection('actions').get().then((QuerySnapshot snapshot) {
       for (var element in snapshot.docs) {
-        if(!actions.contains(element['action'])) {
+        if (!actions.contains(element['action'])) {
           actions.add(element['action']);
         }
       }
@@ -197,37 +170,24 @@ class Database {
     return actions;
   }
 
-  Future<void> uploadMessage(String userId, String message, bool coach) async {
+  Future<void> uploadMessage(String dateTime, String userId, String message, bool coach) async {
     assert(userId != "" && message != "");
-    String dateTime = DateTime.now().toString();
     firestore
         .collection('userMessages')
         .doc(userId)
         .collection('messages')
         .add({'message': message, 'date': dateTime, 'coach': coach})
         .then((value) => print("Sleep data uploaded"))
-        .catchError((error) =>
-            print("Failed to upload sleep data for ${dateTime}: $error"));
+        .catchError((error) => print("Failed to upload sleep data for ${dateTime}: $error"));
   }
 
   Future<List<Map<String, dynamic>>> getMessages(String userId) async {
     assert(userId != "");
     List<Map<String, dynamic>> messages = [];
     //Limited to 2 messages to lower amount of reads
-    await firestore
-        .collection('userMessages')
-        .doc(userId)
-        .collection('messages')
-        .orderBy('date')
-        .limit(5)
-        .get()
-        .then((QuerySnapshot snapshot) {
+    await firestore.collection('userMessages').doc(userId).collection('messages').orderBy('date').limit(5).get().then((QuerySnapshot snapshot) {
       for (var element in snapshot.docs) {
-        messages.add({
-          'message': element['message'],
-          'date': element['date'],
-          'coach': element['coach']
-        });
+        messages.add({'message': element['message'], 'date': element['date'], 'coach': element['coach']});
       }
     });
     return messages;
@@ -260,27 +220,20 @@ class Database {
 
   Future<List<Map<String, dynamic>>> getSleepData() async {
     final userid = authentication.currentUser!.uid;
-    QuerySnapshot snapshot = await firestore
-        .collection('userData')
-        .doc(userid)
-        .collection('sleep')
-        .get();
+    QuerySnapshot snapshot = await firestore.collection('userData').doc(userid).collection('sleep').get();
 
-    List<Map<String, dynamic>> sleepData =
-        snapshot.docs.map((doc) => doc.data()).toList().cast();
+    List<Map<String, dynamic>> sleepData = snapshot.docs.map((doc) => doc.data()).toList().cast();
     return sleepData;
   }
 
   /// Updates the [password] of a user in the database to a new
   /// password given the [email] of the user and a [newPassword].
-  Future<updatePasswordStatus> updatePassword(
-      String email, String password, String newPassword) async {
+  Future<updatePasswordStatus> updatePassword(String email, String password, String newPassword) async {
     final user = authentication.currentUser;
     if (user == null) {
       throw Exception('User is null');
     }
-    AuthCredential credential =
-        EmailAuthProvider.credential(email: email, password: password);
+    AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
     try {
       await user.reauthenticateWithCredential(credential);
     } on FirebaseAuthException catch (e) {
