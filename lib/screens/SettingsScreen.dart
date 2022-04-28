@@ -19,29 +19,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final newPasswordController = TextEditingController();
 
   void submitNewPassword() async {
-    updatePasswordStatus status = await widget.database.updatePassword(emailController.text, oldPasswordController.text, newPasswordController.text);
+    UpdatePasswordStatus status = await widget.database.updatePassword(emailController.text, oldPasswordController.text, newPasswordController.text);
     switch (status) {
-      case updatePasswordStatus.successful:
+      case UpdatePasswordStatus.successful:
         return setState(() {
           _showInputFields = false;
         });
 
-      case updatePasswordStatus.emailInvalid:
+      case UpdatePasswordStatus.emailInvalid:
         return setState(() {
           _errorText = "Invaild email";
         });
 
-      case updatePasswordStatus.passwordIncorrect:
+      case UpdatePasswordStatus.passwordIncorrect:
         return setState(() {
           _errorText = "Incorrect password";
         });
 
-      case updatePasswordStatus.passwordWeak:
+      case UpdatePasswordStatus.passwordWeak:
         return setState(() {
           _errorText = "New Password Is Too Weak";
         });
 
-      case updatePasswordStatus.unknownError:
+      case UpdatePasswordStatus.unknownError:
         return setState(() {
           _errorText = "Unknown Error";
         });
