@@ -4,6 +4,7 @@ import 'package:ouraintervention/misc/Database.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ouraintervention/objects/SleepData.dart';
 
 void main() {
   void expectNotReached() {
@@ -107,6 +108,23 @@ void main() {
       expect(database.authentication.currentUser, mockUser);
       database.logoutUser();
       expect(database.authentication.currentUser, null);
+    });
+  });
+
+  group('uploadOuraData()', () {
+    test('Upload empty data, expect return false', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth());
+      expect(await database.uploadOuraData([]), false);
+    });
+
+    test('Upload data, and test fetching it', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(signedIn: true, mockUser: mockUser));
+      SleepData sleepData =
+          const SleepData(minHr: 0.0, avgHr: 0.0, maxHr: 0, totalSleep: 0, lightSleep: 0, remSleep: 0, deepSleep: 0, date: '2022-04-28');
+      expect(await database.uploadOuraData([sleepData]), true);
+      await database.firestore.collection('userData').doc(mockUser.uid).collection('sleep').get().then((QuerySnapshot snapshot) {
+        expect(snapshot.docs[0]['minHr'], 0.0);
+      });
     });
   });
 }
