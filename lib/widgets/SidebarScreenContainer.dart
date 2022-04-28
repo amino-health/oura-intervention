@@ -8,7 +8,7 @@ import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/screens/SettingsScreen.dart';
 import 'package:ouraintervention/screens/GraphsScreen.dart';
 import 'package:ouraintervention/screens/ActionScreen.dart';
-import 'package:ouraintervention/misc/Database.dart';
+import 'package:ouraintervention/objects/Globals.dart' as globals;
 
 class SidebarScreenContainer extends StatefulWidget {
   const SidebarScreenContainer({Key? key, required this.database}) : super(key: key);
@@ -64,6 +64,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        theme: ThemeData(appBarTheme: AppBarTheme(color: globals.mainColor)),
         home: Scaffold(
             appBar: AppBar(
                 title: Text(
@@ -75,8 +76,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
             body: Row(
               children: [
                 SizedBox(
-                    width: buttonSize + 2 * padding,
-                    child: Container(color: Color.fromARGB(255, 143, 143, 143), child: ListView(children: _createButtons()))),
+                    width: buttonSize + 2 * padding, child: Container(color: globals.secondaryColor, child: ListView(children: _createButtons()))),
                 Expanded(child: routes[_currentScreenIndex])
               ],
             )));
