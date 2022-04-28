@@ -86,4 +86,9 @@ void main() {
       expect(await database.getCollectionData('users'), []);
     });
   });
+
+  group('loginUser()', () {
+    /// Unfortunately 'signInWithEmailAndPassword' does not return any error
+    /// codes for the fake authentication, which means it can't be tested properly
+  });
 }
