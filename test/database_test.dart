@@ -66,4 +66,9 @@ void main() {
       expect(await database.getFieldValue('testCollection', 'testdata2'), "2");
     });
   });
+
+  group('addUser()', () {
+    /// Unfortunately 'createUserWithEmailAndPassword' does not return any error
+    /// codes for the fake authentication, which means it can't be tested properly
+  });
 }
