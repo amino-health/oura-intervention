@@ -6,7 +6,6 @@ import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 import 'package:ouraintervention/screens/Dashboard.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/screens/SettingsScreen.dart';
-import 'package:ouraintervention/screens/GraphsScreen.dart';
 import 'package:ouraintervention/screens/ActionScreen.dart';
 import 'package:ouraintervention/objects/Globals.dart' as globals;
 
@@ -21,7 +20,7 @@ class SidebarScreenContainer extends StatefulWidget {
 
 class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   List<Widget> routes = [];
-  List<String> images = ['home.png', 'profile.png', 'running.png', 'graphs.png', 'settings.png'];
+  List<String> images = ['home.png', 'profile.png', 'running.png', 'settings.png'];
 
   @override
   void initState() {
@@ -29,7 +28,6 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
       Dashboard(),
       ProfileScreen(database: widget.database),
       ActionScreen(database: widget.database),
-      GraphsScreen(database: widget.database),
       SettingsScreen(database: widget.database),
     ];
     super.initState();
