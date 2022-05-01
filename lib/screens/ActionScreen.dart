@@ -18,13 +18,11 @@ class _ProfileScreenState extends State<ActionScreen> {
   final dateController = TextEditingController();
   final currentDate = DateTime.now().toString().substring(0, DateTime.now().toString().length - 13);
 
-  //FIXME: These should be fetched from the database.
-  var actions = ['Run', 'Test', 'Other Item'];
-  var _selectedAction = 'Run';
+  late String _selectedAction;
 
   //FIXME: These should be fetched from the database.
-  var biometrics = ['Sleep1', 'Heart Rate', 'Other Item'];
-  var _selectedBiometric = 'Sleep1';
+  var biometrics = ['Sleep', 'Heart Rate', 'Other Item'];
+  var _selectedBiometric = 'Sleep';
 
   bool isValidDate(String date) {
     List<String> split = date.split('-');
@@ -40,6 +38,46 @@ class _ProfileScreenState extends State<ActionScreen> {
     return false;
   }
 
+  Future<Row> loadActions() async {
+    if (globals.uniqueActions.isEmpty) {
+      globals.uniqueActions = await widget.database.getUniqueActions();
+      setState(() {
+        _selectedAction = globals.uniqueActions[0];
+      });
+    }
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Expanded(
+          flex: 8,
+          child: ButtonTheme(
+              alignedDropdown: true,
+              child: DropdownButton(
+                isExpanded: true,
+                value: _selectedAction,
+                dropdownColor: globals.grey,
+                icon: const Icon(Icons.keyboard_arrow_down),
+                items: globals.uniqueActions.map((String actions) {
+                  return DropdownMenuItem(
+                    value: actions,
+                    child: Text(actions),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedAction = newValue!;
+                  });
+                },
+              ))),
+      Expanded(
+          flex: 2,
+          child: ElevatedButton(
+              onPressed: _addActionDialog,
+              child: const Text("+"),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+              )))
+    ]);
+  }
+
   bool addAction() {
     String date = dateController.text;
     if (date.isEmpty) {
@@ -49,6 +87,9 @@ class _ProfileScreenState extends State<ActionScreen> {
     }
 
     widget.database.uploadAction(actionController.text, date);
+    setState(() {
+      globals.uniqueActions.add(actionController.text);
+    });
     return true;
   }
 
@@ -142,45 +183,24 @@ class _ProfileScreenState extends State<ActionScreen> {
                   child: Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: Container(
+                          height: double.infinity,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
                             color: globals.grey,
                           ),
                           child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Column(children: [
-                                Row(children: [
-                                  Expanded(
-                                      flex: 8,
-                                      child: ButtonTheme(
-                                          alignedDropdown: true,
-                                          child: DropdownButton(
-                                            isExpanded: true,
-                                            value: _selectedAction,
-                                            dropdownColor: globals.grey,
-                                            icon: const Icon(Icons.keyboard_arrow_down),
-                                            items: actions.map((String actions) {
-                                              return DropdownMenuItem(
-                                                value: actions,
-                                                child: Text(actions),
-                                              );
-                                            }).toList(),
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                _selectedAction = newValue!;
-                                              });
-                                            },
-                                          ))),
-                                  Expanded(
-                                      flex: 2,
-                                      child: ElevatedButton(
-                                          onPressed: _addActionDialog,
-                                          child: const Text("+"),
-                                          style: ButtonStyle(
-                                            backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-                                          )))
-                                ]),
-                              ]))))),
+                            padding: const EdgeInsets.all(10.0),
+                            child: FutureBuilder<Row>(
+                                future: loadActions(),
+                                builder: (BuildContext context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return snapshot.data!;
+                                  } else if (snapshot.hasError) {
+                                    return const Text('no data');
+                                  }
+                                  return const LoadingWidget();
+                                }),
+                          )))),
               Expanded(
                   flex: 2,
                   child: Padding(
