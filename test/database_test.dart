@@ -111,17 +111,17 @@ void main() {
     });
   });
 
-  group('uploadOuraData()', () {
+  group('uploadSleepData()', () {
     test('Upload empty data, expect return false', () async {
       final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(signedIn: true, mockUser: mockUser));
-      expect(await database.uploadOuraData([]), false);
+      expect(await database.uploadSleepData([]), false);
     });
 
     test('Upload data, and test fetching it', () async {
       final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(signedIn: true, mockUser: mockUser));
       SleepData sleepData =
           const SleepData(minHr: 0.0, avgHr: 0.0, maxHr: 0, totalSleep: 0, lightSleep: 0, remSleep: 0, deepSleep: 0, date: '2022-04-28');
-      expect(await database.uploadOuraData([sleepData]), true);
+      expect(await database.uploadSleepData([sleepData]), true);
       await database.firestore.collection('userData').doc(mockUser.uid).collection('sleep').get().then((QuerySnapshot snapshot) {
         expect(snapshot.docs[0]['minHr'], 0.0);
       });

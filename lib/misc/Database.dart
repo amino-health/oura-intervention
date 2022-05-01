@@ -112,7 +112,7 @@ class Database {
   }
 
   /// Uploads data from Oura API
-  Future<bool> uploadOuraData(List<SleepData> data) async {
+  Future<bool> uploadSleepData(List<SleepData> data) async {
     final userid = authentication.currentUser!.uid;
 
     if (data.length == 0.0) {

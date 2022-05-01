@@ -78,7 +78,7 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
           sleepList.add(SleepData.fromJson(sleepJson['sleep']![i]));
         }
 
-        widget.database.uploadOuraData(sleepList);
+        widget.database.uploadSleepData(sleepList);
         widget.database.getActionDates('run');
       }
     });

@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final passwordController = TextEditingController();
 
   String _errorText = "";
-  bool _loggedIn = true;
+  bool _loggedIn = false;
   bool _signup = false;
 
   void login() async {
