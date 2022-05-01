@@ -18,7 +18,7 @@ class _ProfileScreenState extends State<ActionScreen> {
   final dateController = TextEditingController();
   final currentDate = DateTime.now().toString().substring(0, DateTime.now().toString().length - 13);
 
-  late String _selectedAction;
+  String _selectedAction = "";
 
   //FIXME: These should be fetched from the database.
   var biometrics = ['Sleep', 'Heart Rate', 'Other Item'];
@@ -41,6 +41,8 @@ class _ProfileScreenState extends State<ActionScreen> {
   Future<Row> loadActions() async {
     if (globals.uniqueActions.isEmpty) {
       globals.uniqueActions = await widget.database.getUniqueActions();
+    }
+    if (_selectedAction == "") {
       setState(() {
         _selectedAction = globals.uniqueActions[0];
       });
