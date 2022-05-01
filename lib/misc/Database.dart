@@ -2,6 +2,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ouraintervention/objects/SleepData.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 enum AddUserStatus { successful, emailBusy, emailInvalid, passwordWeak, tooManyRequests, unknownError }
 
@@ -111,14 +113,25 @@ class Database {
     await authentication.signOut();
   }
 
-  /// Uploads data from Oura API
-  Future<bool> uploadSleepData(List<SleepData> data) async {
+  /// Uploads sleepdata using the Oura api and a [token]
+  Future<bool> uploadSleepData(String token) async {
+    var url = Uri.parse('https://api.ouraring.com/v1/sleep?start=2020-01-01&end=2022-04-22&access_token=$token');
+    var response = await http.get(url, headers: {"Accept": "application/json", "Access-Control-Allow-Origin": "*"});
+
+    Map<String, dynamic> sleepJson = jsonDecode(response.body) as Map<String, dynamic>;
+
+    List<SleepData> sleepList = [];
+
+    for (int i = 0; i < sleepJson['sleep']!.length; i++) {
+      sleepList.add(SleepData.fromJson(sleepJson['sleep']![i]));
+    }
+
     final userid = authentication.currentUser!.uid;
 
-    if (data.length == 0.0) {
+    if (sleepList.length == 0.0) {
       return false; //no data to upload
     }
-    for (SleepData doc in data) {
+    for (SleepData doc in sleepList) {
       firestore
           .collection('userData')
           .doc(userid)
