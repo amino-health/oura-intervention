@@ -19,7 +19,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     String userId = widget.database.authentication.currentUser!.uid;
     String dateTime = DateTime.now().toString();
     await widget.database.uploadMessage(dateTime, userId, message, false);
-    globals.messages.add({'message': message, 'date': dateTime, 'coach': false});
+    setState(() {
+      globals.messages.add({'message': message, 'date': dateTime, 'coach': false});
+    });
+
     messageController.clear();
   }
 
@@ -148,13 +151,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-/*SizedBox(
-                    width: 50.0,
-                    height: 15.0,
-                    child: Container(
-                        decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(15.0))),
-                        child: Text(
-                          'Test',
-                          style: TextStyle(fontSize: 15.0),
-                        )),
-                  )*/
