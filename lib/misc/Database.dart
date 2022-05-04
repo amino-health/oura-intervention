@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ouraintervention/objects/SleepData.dart';
+import 'package:ouraintervention/objects/Globals.dart' as globals;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -115,6 +116,7 @@ class Database {
 
   /// Uploads sleepdata using the Oura api and a [token]
   Future<bool> uploadSleepData(String token) async {
+    ///TODO: This should probably be done in OuraLoginButton.dart in a private function.
     var url = Uri.parse('https://api.ouraring.com/v1/sleep?start=2020-01-01&end=2022-04-22&access_token=$token');
     var response = await http.get(url, headers: {"Accept": "application/json", "Access-Control-Allow-Origin": "*"});
 
@@ -154,6 +156,8 @@ class Database {
   }
 
   Future<bool> uploadAction(String action, String date) async {
+    globals.actions.add({'date': date, 'action': action});
+
     final userid = authentication.currentUser!.uid;
     if (action == "") return false; // no action
     if (date == "") return false; //TODO: check that date is not in the future?
@@ -169,16 +173,18 @@ class Database {
     return true;
   }
 
-  Future<List<String>> getUniqueActions() async {
+  Future<List<Map<String, String>>> getActions() async {
+    if (globals.actions.isNotEmpty) {
+      return globals.actions;
+    }
     final userid = authentication.currentUser!.uid;
-    List<String> actions = [];
+    List<Map<String, String>> actions = [];
     await firestore.collection('userActions').doc(userid).collection('actions').get().then((QuerySnapshot snapshot) {
       for (var element in snapshot.docs) {
-        if (!actions.contains(element['action'])) {
-          actions.add(element['action']);
-        }
+        actions.add({'date': element['date'], 'action': element['action']});
       }
     });
+    globals.actions = actions;
     return actions;
   }
 
