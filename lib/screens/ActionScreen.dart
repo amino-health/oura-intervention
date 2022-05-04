@@ -99,7 +99,7 @@ class _ActionScreenState extends State<ActionScreen> {
     ]);
   }
 
-  bool addAction() {
+  Future<bool> addAction() async {
     String date = dateController.text;
     if (date.isEmpty) {
       date = currentDate;
@@ -110,6 +110,11 @@ class _ActionScreenState extends State<ActionScreen> {
     widget.database.uploadAction(actionController.text, date);
     setState(() {
       globals.actions.add({'action': actionController.text, 'date': date});
+    });
+    var seriesList = await getData('2022-04-10', '2022-04-15');
+
+    setState(() {
+      _data = seriesList;
     });
     return true;
   }
@@ -191,8 +196,8 @@ class _ActionScreenState extends State<ActionScreen> {
             ),
             TextButton(
               child: const Text('Add Action'),
-              onPressed: () {
-                if (addAction()) {
+              onPressed: () async {
+                if (await addAction()) {
                   Navigator.of(context).pop();
                 } else {
                   //FIXME: Display some text saying that the action is invalid
