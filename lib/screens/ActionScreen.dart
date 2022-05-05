@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
 import 'package:ouraintervention/objects/Globals.dart' as globals;
 import 'package:ouraintervention/widgets/groupedBarChart.dart';
 import 'package:ouraintervention/widgets/LoadingWidget.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class ActionScreen extends StatefulWidget {
   const ActionScreen({Key? key, required this.database}) : super(key: key);
@@ -10,15 +13,16 @@ class ActionScreen extends StatefulWidget {
   final Database database;
 
   @override
-  State<ActionScreen> createState() => _ProfileScreenState();
+  State<ActionScreen> createState() => _ActionScreenState();
 }
 
-class _ProfileScreenState extends State<ActionScreen> {
+class _ActionScreenState extends State<ActionScreen> {
   final actionController = TextEditingController();
   final dateController = TextEditingController();
   final currentDate = DateTime.now().toString().substring(0, DateTime.now().toString().length - 13);
 
   String _selectedAction = "";
+  List<charts.Series<Data, String>> _data = [];
 
   //FIXME: These should be fetched from the database.
   var biometrics = ['Sleep', 'Heart Rate', 'Other Item'];
@@ -39,14 +43,22 @@ class _ProfileScreenState extends State<ActionScreen> {
   }
 
   Future<Row> loadActions() async {
-    if (globals.uniqueActions.isEmpty) {
-      globals.uniqueActions = await widget.database.getUniqueActions();
+    if (globals.actions.isEmpty) {
+      await widget.database.getActions();
     }
     if (_selectedAction == "") {
       setState(() {
-        _selectedAction = globals.uniqueActions[0];
+        _selectedAction = 'Choose an action';
       });
     }
+    List<String> uniqueActions = ['Choose an action'];
+    for (var action in globals.actions) {
+      String? actionCheck = action['action'];
+      if (actionCheck != null && !uniqueActions.contains(actionCheck)) {
+        uniqueActions.add(actionCheck);
+      }
+    }
+
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Expanded(
           flex: 8,
@@ -57,15 +69,22 @@ class _ProfileScreenState extends State<ActionScreen> {
                 value: _selectedAction,
                 dropdownColor: globals.grey,
                 icon: const Icon(Icons.keyboard_arrow_down),
-                items: globals.uniqueActions.map((String actions) {
+                items: uniqueActions.map((String actions) {
                   return DropdownMenuItem(
                     value: actions,
                     child: Text(actions),
                   );
                 }).toList(),
-                onChanged: (String? newValue) {
+                onChanged: (String? newValue) async {
                   setState(() {
                     _selectedAction = newValue!;
+                  });
+
+                  //FIXME: Let user pick dates
+                  var seriesList = await getData('2022-04-10', '2022-04-15');
+
+                  setState(() {
+                    _data = seriesList;
                   });
                 },
               ))),
@@ -80,7 +99,7 @@ class _ProfileScreenState extends State<ActionScreen> {
     ]);
   }
 
-  bool addAction() {
+  Future<bool> addAction() async {
     String date = dateController.text;
     if (date.isEmpty) {
       date = currentDate;
@@ -90,7 +109,12 @@ class _ProfileScreenState extends State<ActionScreen> {
 
     widget.database.uploadAction(actionController.text, date);
     setState(() {
-      globals.uniqueActions.add(actionController.text);
+      globals.actions.add({'action': actionController.text, 'date': date});
+    });
+    var seriesList = await getData('2022-04-10', '2022-04-15');
+
+    setState(() {
+      _data = seriesList;
     });
     return true;
   }
@@ -108,15 +132,44 @@ class _ProfileScreenState extends State<ActionScreen> {
         obscureText: obscureText);
   }
 
-  Future<List<List<Data>>> getData() async {
-    List<Map<String, dynamic>> sleepData = await widget.database.getSleepData();
-    List<List<Data>> data = [];
-
-    for (var i = 0; i < sleepData.length; i++) {
-      data.add([Data(sleepData[i]['date'], sleepData[i]['totalSleep'] / 3600)]);
+  Future<List<charts.Series<Data, String>>> getData(String startDate, String endDate) async {
+    if (globals.sleepData.isEmpty) {
+      globals.sleepData = await widget.database.getSleepData();
     }
 
-    return data;
+    List<List<Data>> data = [];
+    for (var i = 0; i < globals.sleepData.length; i++) {
+      if (globals.sleepData[i]['date'].compareTo(startDate) >= 0 && globals.sleepData[i]['date'].compareTo(endDate) <= 0) {
+        bool hasAction = false;
+        for (var action in globals.actions) {
+          if (action['action'] == _selectedAction && globals.sleepData[i]['date'] == action['date']) {
+            hasAction = true;
+          }
+        }
+
+        data.add([Data(globals.sleepData[i]['date'], globals.sleepData[i]['totalSleep'], hasAction ? Colors.green : Colors.blue)]);
+
+        if (globals.sleepData[i]['date'].compareTo(endDate) >= 0) {
+          break;
+        }
+      }
+    }
+
+    List<charts.Series<Data, String>> seriesList = [];
+
+    for (var i = 0; i < data.length; i++) {
+      seriesList.add(charts.Series<Data, String>(
+        id: 'Data',
+        domainFn: (Data data, _) => data.x,
+        measureFn: (Data data, _) => data.y,
+        data: data[i],
+        fillColorFn: (Data data, _) {
+          return charts.ColorUtil.fromDartColor(data.color);
+        },
+      ));
+    }
+
+    return seriesList;
   }
 
   Future<void> _addActionDialog() async {
@@ -143,8 +196,8 @@ class _ProfileScreenState extends State<ActionScreen> {
             ),
             TextButton(
               child: const Text('Add Action'),
-              onPressed: () {
-                if (addAction()) {
+              onPressed: () async {
+                if (await addAction()) {
                   Navigator.of(context).pop();
                 } else {
                   //FIXME: Display some text saying that the action is invalid
@@ -163,20 +216,25 @@ class _ProfileScreenState extends State<ActionScreen> {
       children: [
         Expanded(
             flex: 7,
-            child: FutureBuilder<List<List<Data>>>(
-                future: getData(),
-                builder: (BuildContext context, snapshot) {
-                  if (snapshot.hasData) {
-                    return GroupedBarChart(
-                      dataLists: snapshot.data!,
-                      xLabel: 'Date',
-                      yLabel: 'Sleep (Hours)',
-                    );
-                  } else if (snapshot.hasError) {
-                    return const Text('no data');
-                  }
-                  return const LoadingWidget();
-                })),
+            child: _data.isEmpty
+                ? const LoadingWidget()
+                : Scaffold(
+                    body: Container(
+                      padding: const EdgeInsets.all(70.0),
+                      child: charts.BarChart(
+                        _data,
+                        vertical: true,
+                        barGroupingType: charts.BarGroupingType.grouped,
+                        behaviors: [
+                          charts.ChartTitle('x',
+                              behaviorPosition: charts.BehaviorPosition.bottom,
+                              titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
+                          charts.ChartTitle('y',
+                              behaviorPosition: charts.BehaviorPosition.start, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
+                        ],
+                      ),
+                    ),
+                  )),
         Expanded(
             flex: 3,
             child: Row(children: [
