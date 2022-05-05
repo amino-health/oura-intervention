@@ -16,8 +16,10 @@ class ActionScreen extends StatefulWidget {
 }
 
 class _ActionScreenState extends State<ActionScreen> {
-  final actionController = TextEditingController();
-  final dateController = TextEditingController();
+  final addActionController = TextEditingController();
+  final addDateController = TextEditingController();
+  final deleteActionController = TextEditingController();
+  final deleteDateController = TextEditingController();
   final currentDate = DateTime.now().toString().substring(0, DateTime.now().toString().length - 13);
 
   String _selectedAction = "";
@@ -55,15 +57,7 @@ class _ActionScreenState extends State<ActionScreen> {
     return false;
   }
 
-  Future<Row> loadActions() async {
-    if (globals.actions.isEmpty) {
-      await widget.database.getActions();
-    }
-    if (_selectedAction == "") {
-      setState(() {
-        _selectedAction = 'Choose an action';
-      });
-    }
+  List<String> getUniqueActions() {
     List<String> uniqueActions = ['Choose an action'];
     for (var action in globals.actions) {
       String? actionCheck = action['action'];
@@ -71,6 +65,21 @@ class _ActionScreenState extends State<ActionScreen> {
         uniqueActions.add(actionCheck);
       }
     }
+    return uniqueActions;
+  }
+
+  Future<Row> loadActions() async {
+    if (globals.actions.isEmpty) {
+      await widget.database.getActions();
+    }
+    
+    if (_selectedAction == "") {
+      setState(() {
+        _selectedAction = 'Choose an action';
+      });
+    }
+
+    List<String> uniqueActions = getUniqueActions();
 
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Expanded(
@@ -92,7 +101,6 @@ class _ActionScreenState extends State<ActionScreen> {
                   setState(() {
                     _selectedAction = newValue!;
                   });
-
                   //FIXME: Let user pick dates
                   var seriesList = await getData('2022-04-10', '2022-04-15');
 
@@ -103,26 +111,34 @@ class _ActionScreenState extends State<ActionScreen> {
               ))),
       Expanded(
           flex: 2,
-          child: ElevatedButton(
-              onPressed: _addActionDialog,
-              child: const Text("+"),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-              )))
+          child: Column(children: [
+            ElevatedButton(
+                onPressed: _addActionDialog,
+                child: const Text("+"),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                )),
+            ElevatedButton(
+                onPressed: _deleteActionDialog,
+                child: const Text("-"),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                ))
+          ]))
     ]);
   }
 
   Future<bool> addAction() async {
-    String date = dateController.text;
+    String date = addDateController.text;
     if (date.isEmpty) {
       date = currentDate;
     } else if (!isValidDate(date)) {
       return false;
     }
 
-    widget.database.uploadAction(actionController.text, date);
+    widget.database.uploadAction(addActionController.text, date);
     setState(() {
-      globals.actions.add({'action': actionController.text, 'date': date});
+      globals.actions.add({'action': addActionController.text, 'date': date});
     });
     var seriesList = await getData('2022-04-10', '2022-04-15');
 
@@ -130,6 +146,46 @@ class _ActionScreenState extends State<ActionScreen> {
       _data = seriesList;
     });
     return true;
+  }
+
+  bool _hasAction(String action) {
+    for (var i = 0; i < globals.actions.length; i++) {
+      if (globals.actions[i]['action'] == action) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> deleteAction() async {
+    String date = deleteDateController.text;
+    String action = deleteActionController.text;
+    if (date.isEmpty) {
+      date = currentDate;
+    } else if (!isValidDate(date)) {
+      return false;
+    }
+
+    for (var i = 0; i < globals.actions.length; i++) {
+      if (globals.actions[i]['date'] == date && globals.actions[i]['action'] == action) {
+        await widget.database.deleteAction(action, date);
+
+        setState(() {
+          globals.actions.removeAt(i);
+          _selectedAction = _hasAction(action) ? action : 'Choose an action';
+        });
+
+        var seriesList = await getData('2022-04-10', '2022-04-15');
+
+        setState(() {
+          _data = seriesList;
+        });
+
+        return true;
+      }
+    }
+
+    return false;
   }
 
   TextField generateTextField(TextEditingController controller, String labelText, bool obscureText, Icon icon) {
@@ -185,6 +241,45 @@ class _ActionScreenState extends State<ActionScreen> {
     return seriesList;
   }
 
+  Future<void> _deleteActionDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Action'),
+          content: Column(mainAxisSize: MainAxisSize.min, children: [
+            Center(
+                child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: generateTextField(deleteActionController, "Action", false, const Icon(Icons.email_sharp)))),
+            Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: generateTextField(deleteDateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
+          ]),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete Action'),
+              onPressed: () async {
+                if (await deleteAction()) {
+                  Navigator.of(context).pop();
+                } else {
+                  //FIXME: Display some text saying that the action is invalid
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> _addActionDialog() async {
     return showDialog<void>(
       context: context,
@@ -195,10 +290,11 @@ class _ActionScreenState extends State<ActionScreen> {
           content: Column(mainAxisSize: MainAxisSize.min, children: [
             Center(
                 child: Padding(
-                    padding: const EdgeInsets.all(10.0), child: generateTextField(actionController, "Action", false, const Icon(Icons.email_sharp)))),
+                    padding: const EdgeInsets.all(10.0),
+                    child: generateTextField(addActionController, "Action", false, const Icon(Icons.email_sharp)))),
             Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: generateTextField(dateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
+                child: generateTextField(addDateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
           ]),
           actions: <Widget>[
             TextButton(

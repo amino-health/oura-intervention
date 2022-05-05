@@ -156,8 +156,6 @@ class Database {
   }
 
   Future<bool> uploadAction(String action, String date) async {
-    globals.actions.add({'date': date, 'action': action});
-
     final userid = authentication.currentUser!.uid;
     if (action == "") return false; // no action
     if (date == "") return false; //TODO: check that date is not in the future?
