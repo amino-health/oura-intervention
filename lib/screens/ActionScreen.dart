@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
 import 'package:ouraintervention/objects/Globals.dart' as globals;
-import 'package:ouraintervention/widgets/groupedBarChart.dart';
 import 'package:ouraintervention/widgets/LoadingWidget.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
@@ -23,10 +22,24 @@ class _ActionScreenState extends State<ActionScreen> {
 
   String _selectedAction = "";
   List<charts.Series<Data, String>> _data = [];
-
+  String xLabel = 'x';
+  String yLabel = 'y';
   //FIXME: These should be fetched from the database.
   var biometrics = ['Sleep', 'Heart Rate', 'Other Item'];
   var _selectedBiometric = 'Sleep';
+
+  @override
+  void initState() {
+    super.initState();
+    initializeSleepData();
+  }
+
+  void initializeSleepData() async {
+    var seriesList = await getData('2022-04-10', '2022-04-15');
+    setState(() {
+      _data = seriesList;
+    });
+  }
 
   bool isValidDate(String date) {
     List<String> split = date.split('-');
@@ -258,7 +271,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                   } else if (snapshot.hasError) {
                                     return const Text('no data');
                                   }
-                                  return const LoadingWidget();
+                                  return const SizedBox.shrink();
                                 }),
                           )))),
               Expanded(
@@ -304,4 +317,12 @@ class _ActionScreenState extends State<ActionScreen> {
       ],
     );
   }
+}
+
+class Data {
+  final String x;
+  final double y;
+  final Color color;
+
+  Data(this.x, this.y, this.color);
 }
