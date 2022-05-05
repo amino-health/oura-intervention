@@ -111,7 +111,7 @@ void main() {
     });
   });
 
-  group('uploadSleepData()', () {
+  /*group('uploadSleepData()', () {
     test('Upload empty data, expect return false', () async {
       final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(signedIn: true, mockUser: mockUser));
       expect(await database.uploadSleepData([]), false);
@@ -125,6 +125,37 @@ void main() {
       await database.firestore.collection('userData').doc(mockUser.uid).collection('sleep').get().then((QuerySnapshot snapshot) {
         expect(snapshot.docs[0]['minHr'], 0.0);
       });
+    });
+  });*/
+
+  group('deleteAction()', () {
+    test('Delete non-existing action', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(signedIn: true, mockUser: mockUser));
+      expect(await database.deleteAction('nonexisting', 'nonexisting'), false);
+    });
+    test('Delete existing action and check that it\'s gone', () async {
+      final Database database = Database(FakeFirebaseFirestore(), MockFirebaseAuth(signedIn: true, mockUser: mockUser));
+      String action = 'action';
+      String date = '2022-05-01';
+      await database.uploadAction(action, date);
+      final userId = database.authentication.currentUser!.uid;
+      await database.firestore
+          .collection('userActions')
+          .doc(userId)
+          .collection('actions')
+          .where('action', isEqualTo: action)
+          .where('date', isEqualTo: date)
+          .get()
+          .then((QuerySnapshot snapshot) => {expect(snapshot.docs.isEmpty, false)});
+      await database.deleteAction(action, date);
+      await database.firestore
+          .collection('userActions')
+          .doc(userId)
+          .collection('actions')
+          .where('action', isEqualTo: action)
+          .where('date', isEqualTo: date)
+          .get()
+          .then((QuerySnapshot snapshot) => {expect(snapshot.docs.isEmpty, true)});
     });
   });
 }

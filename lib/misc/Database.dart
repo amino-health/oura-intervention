@@ -173,6 +173,25 @@ class Database {
     return true;
   }
 
+  Future<bool> deleteAction(String action, String date) async {
+    final userid = authentication.currentUser!.uid;
+    bool foundAction = true;
+
+    await firestore
+        .collection('userActions')
+        .doc(userid)
+        .collection('actions')
+        .where('action', isEqualTo: action)
+        .where('date', isEqualTo: date)
+        .get()
+        .then((QuerySnapshot snapshot) async => {
+              if (snapshot.docs.isEmpty) {foundAction = false},
+              for (var element in snapshot.docs)
+                {await firestore.collection('userActions').doc(userid).collection('actions').doc(element.id).delete()}
+            });
+    return foundAction;
+  }
+
   Future<List<Map<String, String>>> getActions() async {
     if (globals.actions.isNotEmpty) {
       return globals.actions;
