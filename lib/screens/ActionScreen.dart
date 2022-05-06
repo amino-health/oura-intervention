@@ -40,7 +40,7 @@ class _ActionScreenState extends State<ActionScreen> {
   }
 
   void initializeSleepData() async {
-    var seriesList = await getData('2022-04-10', '2022-04-15');
+    var seriesList = await getData(startDateController.text, endDateController.text);
     setState(() {
       _data = seriesList;
     });
@@ -104,8 +104,7 @@ class _ActionScreenState extends State<ActionScreen> {
                   setState(() {
                     _selectedAction = newValue!;
                   });
-                  //FIXME: Let user pick dates
-                  var seriesList = await getData('2022-04-10', '2022-04-15');
+                  var seriesList = await getData(startDateController.text, endDateController.text);
 
                   setState(() {
                     _data = seriesList;
@@ -143,7 +142,7 @@ class _ActionScreenState extends State<ActionScreen> {
     setState(() {
       globals.actions.add({'action': addActionController.text, 'date': date});
     });
-    var seriesList = await getData('2022-04-10', '2022-04-15');
+    var seriesList = await getData(startDateController.text, endDateController.text);
 
     setState(() {
       _data = seriesList;
@@ -178,7 +177,7 @@ class _ActionScreenState extends State<ActionScreen> {
           _selectedAction = _hasAction(action) ? action : 'Choose an action';
         });
 
-        var seriesList = await getData('2022-04-10', '2022-04-15');
+        var seriesList = await getData(startDateController.text, endDateController.text);
 
         setState(() {
           _data = seriesList;
@@ -189,6 +188,14 @@ class _ActionScreenState extends State<ActionScreen> {
     }
 
     return false;
+  }
+
+  Future<void> updateData() async {
+    var seriesList = await getData(startDateController.text, endDateController.text);
+
+    setState(() {
+      _data = seriesList;
+    });
   }
 
   TextField generateTextField(TextEditingController controller, String labelText, bool obscureText, Icon icon) {
@@ -435,7 +442,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                       filled: true))),
                         ],
                       )),
-                  const Expanded(flex: 2, child: Center(child: Text("TODO: button to update dates in getData()")))
+                  Expanded(flex: 2, child: Center(child: ElevatedButton(onPressed: updateData, child: const Text("Update Date"))))
                 ]),
               )
             ])),
