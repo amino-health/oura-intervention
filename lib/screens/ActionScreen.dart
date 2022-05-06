@@ -345,10 +345,10 @@ class _ActionScreenState extends State<ActionScreen> {
                         vertical: true,
                         barGroupingType: charts.BarGroupingType.grouped,
                         behaviors: [
-                          charts.ChartTitle('x',
+                          charts.ChartTitle('Days',
                               behaviorPosition: charts.BehaviorPosition.bottom,
                               titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
-                          charts.ChartTitle('y',
+                          charts.ChartTitle(_selectedBiometric,
                               behaviorPosition: charts.BehaviorPosition.start, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
                         ],
                       ),
