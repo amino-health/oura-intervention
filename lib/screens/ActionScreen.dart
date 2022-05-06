@@ -21,6 +21,9 @@ class _ActionScreenState extends State<ActionScreen> {
   final deleteActionController = TextEditingController();
   final deleteDateController = TextEditingController();
   final currentDate = DateTime.now().toString().substring(0, DateTime.now().toString().length - 13);
+  final startDateController =
+      TextEditingController(text: DateTime.now().subtract(const Duration(days: 7)).toString().substring(0, DateTime.now().toString().length - 13));
+  final endDateController = TextEditingController(text: DateTime.now().toString().substring(0, DateTime.now().toString().length - 13));
 
   String _selectedAction = "";
   List<charts.Series<Data, String>> _data = [];
@@ -72,7 +75,7 @@ class _ActionScreenState extends State<ActionScreen> {
     if (globals.actions.isEmpty) {
       await widget.database.getActions();
     }
-    
+
     if (_selectedAction == "") {
       setState(() {
         _selectedAction = 'Choose an action';
@@ -405,9 +408,35 @@ class _ActionScreenState extends State<ActionScreen> {
                                           ))),
                                 ]),
                               ]))))),
-              const Expanded(
+              Expanded(
                 flex: 3,
-                child: Center(child: Text("TODO: Choose dates")),
+                child: Column(children: [
+                  Expanded(
+                      flex: 2,
+                      child: Row(
+                        children: [
+                          Expanded(
+                              child: TextField(
+                                  controller: startDateController,
+                                  decoration: const InputDecoration(
+                                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
+                                      border: OutlineInputBorder(),
+                                      labelText: "Start Date",
+                                      fillColor: Colors.white,
+                                      filled: true))),
+                          Expanded(
+                              child: TextField(
+                                  controller: endDateController,
+                                  decoration: const InputDecoration(
+                                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
+                                      border: OutlineInputBorder(),
+                                      labelText: "End Date",
+                                      fillColor: Colors.white,
+                                      filled: true))),
+                        ],
+                      )),
+                  const Expanded(flex: 2, child: Center(child: Text("TODO: button to update dates in getData()")))
+                ]),
               )
             ])),
       ],
