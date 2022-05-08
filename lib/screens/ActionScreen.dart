@@ -36,17 +36,10 @@ class _ActionScreenState extends State<ActionScreen> {
   @override
   void initState() {
     super.initState();
-    initializeSleepData();
+    updateData();
   }
 
-  void initializeSleepData() async {
-    var seriesList = await getData(startDateController.text, endDateController.text);
-    setState(() {
-      _data = seriesList;
-    });
-  }
-
-  bool isValidDate(String date) {
+  bool _isValidDate(String date) {
     List<String> split = date.split('-');
 
     if (split.length != 3) {
@@ -60,7 +53,7 @@ class _ActionScreenState extends State<ActionScreen> {
     return false;
   }
 
-  List<String> getUniqueActions() {
+  List<String> _getUniqueActions() {
     List<String> uniqueActions = ['Choose an action'];
     for (var action in globals.actions) {
       String? actionCheck = action['action'];
@@ -82,11 +75,11 @@ class _ActionScreenState extends State<ActionScreen> {
       });
     }
 
-    List<String> uniqueActions = getUniqueActions();
+    List<String> uniqueActions = _getUniqueActions();
 
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Expanded(
-          flex: 8,
+          flex: 7,
           child: ButtonTheme(
               alignedDropdown: true,
               child: DropdownButton(
@@ -104,16 +97,13 @@ class _ActionScreenState extends State<ActionScreen> {
                   setState(() {
                     _selectedAction = newValue!;
                   });
-                  var seriesList = await getData(startDateController.text, endDateController.text);
 
-                  setState(() {
-                    _data = seriesList;
-                  });
+                  await updateData();
                 },
               ))),
       Expanded(
-          flex: 2,
-          child: Column(children: [
+          flex: 3,
+          child: Row(children: [
             ElevatedButton(
                 onPressed: _addActionDialog,
                 child: const Text("+"),
@@ -134,7 +124,7 @@ class _ActionScreenState extends State<ActionScreen> {
     String date = addDateController.text;
     if (date.isEmpty) {
       date = currentDate;
-    } else if (!isValidDate(date)) {
+    } else if (!_isValidDate(date)) {
       return false;
     }
 
@@ -142,11 +132,9 @@ class _ActionScreenState extends State<ActionScreen> {
     setState(() {
       globals.actions.add({'action': addActionController.text, 'date': date});
     });
-    var seriesList = await getData(startDateController.text, endDateController.text);
 
-    setState(() {
-      _data = seriesList;
-    });
+    await updateData();
+
     return true;
   }
 
@@ -164,7 +152,7 @@ class _ActionScreenState extends State<ActionScreen> {
     String action = deleteActionController.text;
     if (date.isEmpty) {
       date = currentDate;
-    } else if (!isValidDate(date)) {
+    } else if (!_isValidDate(date)) {
       return false;
     }
 
@@ -177,11 +165,7 @@ class _ActionScreenState extends State<ActionScreen> {
           _selectedAction = _hasAction(action) ? action : 'Choose an action';
         });
 
-        var seriesList = await getData(startDateController.text, endDateController.text);
-
-        setState(() {
-          _data = seriesList;
-        });
+        await updateData();
 
         return true;
       }
@@ -211,22 +195,39 @@ class _ActionScreenState extends State<ActionScreen> {
         obscureText: obscureText);
   }
 
+  List<charts.Series<Data, String>> _createSeriesList(List<Data> data) {
+    List<charts.Series<Data, String>> seriesList = [];
+
+    seriesList.add(charts.Series<Data, String>(
+      id: _selectedAction,
+      domainFn: (Data data, _) => data.x,
+      measureFn: (Data data, _) => data.y,
+      data: data,
+      fillColorFn: (Data data, _) {
+        return charts.ColorUtil.fromDartColor(data.color);
+      },
+    ));
+
+    return seriesList;
+  }
+
   Future<List<charts.Series<Data, String>>> getData(String startDate, String endDate) async {
     if (globals.sleepData.isEmpty) {
       globals.sleepData = await widget.database.getSleepData();
     }
 
-    List<List<Data>> data = [];
+    List<Data> data = [];
     for (var i = 0; i < globals.sleepData.length; i++) {
       if (globals.sleepData[i]['date'].compareTo(startDate) >= 0 && globals.sleepData[i]['date'].compareTo(endDate) <= 0) {
         bool hasAction = false;
         for (var action in globals.actions) {
           if (action['action'] == _selectedAction && globals.sleepData[i]['date'] == action['date']) {
             hasAction = true;
+            break;
           }
         }
 
-        data.add([Data(globals.sleepData[i]['date'], globals.sleepData[i]['totalSleep'], hasAction ? Colors.green : Colors.blue)]);
+        data.add(Data(globals.sleepData[i]['date'], globals.sleepData[i]['totalSleep'], hasAction ? Colors.green : Colors.red));
 
         if (globals.sleepData[i]['date'].compareTo(endDate) >= 0) {
           break;
@@ -234,21 +235,7 @@ class _ActionScreenState extends State<ActionScreen> {
       }
     }
 
-    List<charts.Series<Data, String>> seriesList = [];
-
-    for (var i = 0; i < data.length; i++) {
-      seriesList.add(charts.Series<Data, String>(
-        id: 'Data',
-        domainFn: (Data data, _) => data.x,
-        measureFn: (Data data, _) => data.y,
-        data: data[i],
-        fillColorFn: (Data data, _) {
-          return charts.ColorUtil.fromDartColor(data.color);
-        },
-      ));
-    }
-
-    return seriesList;
+    return _createSeriesList(data);
   }
 
   Future<void> _deleteActionDialog() async {
@@ -334,118 +321,128 @@ class _ActionScreenState extends State<ActionScreen> {
     return Column(
       children: [
         Expanded(
-            flex: 7,
-            child: _data.isEmpty
-                ? const LoadingWidget()
-                : Scaffold(
-                    body: Container(
-                      padding: const EdgeInsets.all(70.0),
-                      child: charts.BarChart(
-                        _data,
-                        vertical: true,
-                        barGroupingType: charts.BarGroupingType.grouped,
-                        behaviors: [
-                          charts.ChartTitle('Days',
-                              behaviorPosition: charts.BehaviorPosition.bottom,
-                              titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
-                          charts.ChartTitle(_selectedBiometric,
-                              behaviorPosition: charts.BehaviorPosition.start, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
-                        ],
-                      ),
-                    ),
-                  )),
+          flex: 7,
+          child: Container(
+              decoration: BoxDecoration(border: Border.all(width: 3, color: globals.dark)),
+              child: _data.isEmpty
+                  ? const LoadingWidget()
+                  : charts.BarChart(
+                      _data,
+                      animate: true,
+                      behaviors: [
+                        charts.ChartTitle('Days',
+                            behaviorPosition: charts.BehaviorPosition.bottom, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
+                        charts.ChartTitle(_selectedBiometric, behaviorPosition: charts.BehaviorPosition.start),
+                        charts.SeriesLegend()
+                      ],
+                    )),
+        ),
         Expanded(
             flex: 3,
-            child: Row(children: [
-              Expanded(
-                  flex: 2,
-                  child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Container(
-                          height: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: globals.grey,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: FutureBuilder<Row>(
-                                future: loadActions(),
-                                builder: (BuildContext context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    return snapshot.data!;
-                                  } else if (snapshot.hasError) {
-                                    return const Text('no data');
-                                  }
-                                  return const SizedBox.shrink();
-                                }),
-                          )))),
-              Expanded(
-                  flex: 2,
-                  child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: globals.grey,
-                          ),
+            child: Container(
+                decoration: BoxDecoration(border: Border.all(width: 3, color: globals.dark)),
+                child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Row(children: [
+                      Expanded(
+                          flex: 2,
                           child: Padding(
                               padding: const EdgeInsets.all(10.0),
-                              child: Column(children: [
-                                Row(children: [
+                              child: Container(
+                                  height: double.infinity,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: globals.grey,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: FutureBuilder<Row>(
+                                        future: loadActions(),
+                                        builder: (BuildContext context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return snapshot.data!;
+                                          } else if (snapshot.hasError) {
+                                            return const Text('no data');
+                                          }
+                                          return const SizedBox.shrink();
+                                        }),
+                                  )))),
+                      Expanded(
+                          flex: 2,
+                          child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    color: globals.grey,
+                                  ),
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Column(children: [
+                                        Row(children: [
+                                          Expanded(
+                                              child: ButtonTheme(
+                                                  alignedDropdown: true,
+                                                  child: DropdownButton(
+                                                    isExpanded: true,
+                                                    value: _selectedBiometric,
+                                                    dropdownColor: globals.grey,
+                                                    icon: const Icon(Icons.keyboard_arrow_down),
+                                                    items: biometrics.map((String biometrics) {
+                                                      return DropdownMenuItem(
+                                                        value: biometrics,
+                                                        child: Text(biometrics),
+                                                      );
+                                                    }).toList(),
+                                                    onChanged: (String? newValue) {
+                                                      setState(() {
+                                                        _selectedBiometric = newValue!;
+                                                      });
+                                                    },
+                                                  ))),
+                                        ]),
+                                      ]))))),
+                      Expanded(
+                        flex: 3,
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                          Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Row(
+                                children: [
                                   Expanded(
-                                      child: ButtonTheme(
-                                          alignedDropdown: true,
-                                          child: DropdownButton(
-                                            isExpanded: true,
-                                            value: _selectedBiometric,
-                                            dropdownColor: globals.grey,
-                                            icon: const Icon(Icons.keyboard_arrow_down),
-                                            items: biometrics.map((String biometrics) {
-                                              return DropdownMenuItem(
-                                                value: biometrics,
-                                                child: Text(biometrics),
-                                              );
-                                            }).toList(),
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                _selectedBiometric = newValue!;
-                                              });
-                                            },
-                                          ))),
-                                ]),
-                              ]))))),
-              Expanded(
-                flex: 3,
-                child: Column(children: [
-                  Expanded(
-                      flex: 2,
-                      child: Row(
-                        children: [
+                                      child: TextField(
+                                          controller: startDateController,
+                                          decoration: const InputDecoration(
+                                              focusedBorder:
+                                                  OutlineInputBorder(borderSide: BorderSide(color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
+                                              border: OutlineInputBorder(),
+                                              labelText: "Start Date",
+                                              fillColor: Colors.white,
+                                              filled: true))),
+                                  Expanded(
+                                      child: TextField(
+                                          controller: endDateController,
+                                          decoration: const InputDecoration(
+                                              focusedBorder:
+                                                  OutlineInputBorder(borderSide: BorderSide(color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
+                                              border: OutlineInputBorder(),
+                                              labelText: "End Date",
+                                              fillColor: Colors.white,
+                                              filled: true))),
+                                ],
+                              )),
                           Expanded(
-                              child: TextField(
-                                  controller: startDateController,
-                                  decoration: const InputDecoration(
-                                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
-                                      border: OutlineInputBorder(),
-                                      labelText: "Start Date",
-                                      fillColor: Colors.white,
-                                      filled: true))),
-                          Expanded(
-                              child: TextField(
-                                  controller: endDateController,
-                                  decoration: const InputDecoration(
-                                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Color.fromARGB(255, 67, 84, 98), width: 2.0)),
-                                      border: OutlineInputBorder(),
-                                      labelText: "End Date",
-                                      fillColor: Colors.white,
-                                      filled: true))),
-                        ],
-                      )),
-                  Expanded(flex: 2, child: Center(child: ElevatedButton(onPressed: updateData, child: const Text("Update Date"))))
-                ]),
-              )
-            ])),
+                              child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: ElevatedButton(
+                                      style: ButtonStyle(
+                                        backgroundColor: MaterialStateProperty.all<Color>(globals.secondaryColor),
+                                      ),
+                                      onPressed: updateData,
+                                      child: const Text("Update Date", style: TextStyle(fontSize: 35.0, color: Colors.white)))))
+                        ]),
+                      )
+                    ])))),
       ],
     );
   }
