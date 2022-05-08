@@ -31,7 +31,6 @@ class LoadingWidget extends StatelessWidget {
             return Container(
               padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.all(8),
-              constraints: const BoxConstraints.tightForFinite(width: 300, height: 300),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: const Border.fromBorderSide(BorderSide()),
