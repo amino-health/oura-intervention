@@ -27,9 +27,9 @@ class Database {
   }
 
   /// Returns the value of a field given a [collection] and a [field]
-  Future<String> getFieldValue(String collection, String field) async {
+  Future<dynamic> getFieldValue(String collection, String field) async {
     String uid = authentication.currentUser!.uid;
-    String fieldValue = await firestore.collection(collection).doc(uid).get().then((value) {
+    dynamic fieldValue = await firestore.collection(collection).doc(uid).get().then((value) {
       return value.data()![field];
     });
     return fieldValue;
