@@ -16,11 +16,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final messageController = TextEditingController();
 
   Future<void> uploadMessage(String message) async {
-    String userId = widget.database.authentication.currentUser!.uid;
     String dateTime = DateTime.now().toString();
-    await widget.database.uploadMessage(dateTime, userId, message, false);
+    await widget.database.uploadMessage(dateTime, message, globals.isAdmin, globals.coachedId);
     setState(() {
-      globals.messages.add({'message': message, 'date': dateTime, 'coach': false});
+      globals.messages.add({'message': message, 'date': dateTime, 'coach': globals.isAdmin});
     });
 
     messageController.clear();
@@ -28,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<List<Widget>> createMessageContainers() async {
     List<Widget> containers = [];
-    String userId = widget.database.authentication.currentUser!.uid;
+    String userId = globals.coachedId != null ? globals.coachedId! : widget.database.authentication.currentUser!.uid;
 
     // This is to reduce the number of database requests
     if (globals.messages.isEmpty) {
@@ -90,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Center(
                     child: FutureBuilder(
                         future: widget.database.getFieldValue('users', 'username'),
-                        builder: (BuildContext context, AsyncSnapshot<String?> text) {
+                        builder: (BuildContext context, AsyncSnapshot<dynamic?> text) {
                           return Text(
                             text.data ?? "",
                             style: const TextStyle(fontSize: 20),

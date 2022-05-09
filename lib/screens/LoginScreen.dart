@@ -23,6 +23,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void login() async {
     LoginUserStatus loginUserStatus = await widget.database.loginUser(emailController.text, passwordController.text);
+    
+    globals.isAdmin = await widget.database.getFieldValue('users', 'admin');
     switch (loginUserStatus) {
       case LoginUserStatus.successful:
         setState(() {

@@ -21,6 +21,22 @@ class SidebarScreenContainer extends StatefulWidget {
 class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   List<Widget> routes = [];
   List<String> images = ['home.png', 'profile.png', 'running.png', 'settings.png'];
+  List<String> _users = ['Choose a user'];
+  String _selectedUser = 'Choose a user';
+  
+  void intializeUsers() async {
+    if (globals.users.isEmpty) {
+      globals.users = await widget.database.getallUsers();
+    }
+ 
+    List<String> usernames = [];
+    for (var i = 0; i < globals.users.length; i++) {
+      usernames.add(globals.users[i]['username']!);
+    }
+    setState(() {
+      _users = _users + usernames;  
+    });
+  }
 
   @override
   void initState() {
@@ -30,6 +46,9 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
       ActionScreen(database: widget.database),
       SettingsScreen(database: widget.database),
     ];
+    if (globals.isAdmin) {
+      intializeUsers();
+    }
     super.initState();
   }
 
@@ -52,7 +71,10 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
               )
             },
             child: Image.asset('../../assets/images/' + images[i]),
-            style: ElevatedButton.styleFrom(side: const BorderSide(width: 1.0), fixedSize: Size(buttonSize, buttonSize), primary: _currentScreenIndex == i ? Colors.grey : Colors.white),
+            style: ElevatedButton.styleFrom(
+                side: const BorderSide(width: 1.0),
+                fixedSize: Size(buttonSize, buttonSize),
+                primary: _currentScreenIndex == i ? Colors.grey : Colors.white),
           )));
     }
     return buttons;
@@ -70,7 +92,40 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
                   style: const TextStyle(fontSize: 25.0, color: Colors.white),
                 ),
                 centerTitle: true,
-                actions: <Widget>[OuraLoginButton(database: widget.database)]),
+                actions: <Widget>[
+                  globals.isAdmin
+                      ? Container(
+                          decoration: BoxDecoration(color: globals.grey),
+                          height: double.infinity,
+                          width: 200.0,
+                          child: ButtonTheme(
+                              alignedDropdown: true,
+                              child: DropdownButton(
+                                isExpanded: true,
+                                value: _selectedUser,
+                                dropdownColor: globals.grey,
+                                icon: const Icon(Icons.keyboard_arrow_down),
+                                items: _users.map((String user) {
+                                  return DropdownMenuItem(
+                                    value: user,
+                                    child: Text(user),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _selectedUser = newValue!;
+                                  });
+                                  globals.resetGlobals();
+                                  for(var i = 0; i < globals.users.length; i++) {
+                                    if(globals.users[i]['username'] == _selectedUser) {
+                                      globals.coachedId = globals.users[i]['id'];
+                                      break;
+                                    }
+                                  }
+                                },
+                              )))
+                      : OuraLoginButton(database: widget.database)
+                ]),
             body: Row(
               children: [
                 SizedBox(

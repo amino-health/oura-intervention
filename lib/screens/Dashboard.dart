@@ -18,7 +18,7 @@ class _DashboardState extends State<Dashboard> {
   String _latestUpdate = "";
 
   void _initializeUsername() async {
-    if(globals.username != "") {
+    if (globals.username != "") {
       _username = globals.username;
       return;
     }
@@ -31,9 +31,24 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  void _initializeLatestUpdate() async {
+    if (globals.latestUpdate != "No data") {
+      _latestUpdate = globals.latestUpdate;
+      return;
+    }
+
+    String latestUpdate = await widget.database.getFieldValue('users', 'latestUpdate');
+    globals.latestUpdate = latestUpdate;
+
+    setState(() {
+      _latestUpdate = latestUpdate;
+    });
+  }
+
   @override
   void initState() {
     _initializeUsername();
+    _initializeLatestUpdate();
     super.initState();
   }
 

@@ -66,7 +66,7 @@ class _ActionScreenState extends State<ActionScreen> {
 
   Future<Row> loadActions() async {
     if (globals.actions.isEmpty) {
-      await widget.database.getActions();
+      await widget.database.getActions(globals.coachedId);
     }
 
     if (_selectedAction == "") {
@@ -104,18 +104,22 @@ class _ActionScreenState extends State<ActionScreen> {
       Expanded(
           flex: 3,
           child: Row(children: [
-            ElevatedButton(
-                onPressed: _addActionDialog,
-                child: const Text("+"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-                )),
-            ElevatedButton(
-                onPressed: _deleteActionDialog,
-                child: const Text("-"),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-                ))
+            Expanded(
+                flex: 1,
+                child: ElevatedButton(
+                    onPressed: _addActionDialog,
+                    child: const Text("+"),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                    ))),
+            Expanded(
+                flex: 1,
+                child: ElevatedButton(
+                    onPressed: _deleteActionDialog,
+                    child: const Text("-"),
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+                    )))
           ]))
     ]);
   }
@@ -128,7 +132,7 @@ class _ActionScreenState extends State<ActionScreen> {
       return false;
     }
 
-    widget.database.uploadAction(addActionController.text, date);
+    widget.database.uploadAction(addActionController.text, date, globals.coachedId);
     setState(() {
       globals.actions.add({'action': addActionController.text, 'date': date});
     });
@@ -213,7 +217,7 @@ class _ActionScreenState extends State<ActionScreen> {
 
   Future<List<charts.Series<Data, String>>> getData(String startDate, String endDate) async {
     if (globals.sleepData.isEmpty) {
-      globals.sleepData = await widget.database.getSleepData();
+      globals.sleepData = await widget.database.getSleepData(globals.coachedId);
     }
 
     List<Data> data = [];
@@ -333,7 +337,6 @@ class _ActionScreenState extends State<ActionScreen> {
                         charts.ChartTitle('Days',
                             behaviorPosition: charts.BehaviorPosition.bottom, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
                         charts.ChartTitle(_selectedBiometric, behaviorPosition: charts.BehaviorPosition.start),
-                        charts.SeriesLegend()
                       ],
                     )),
         ),

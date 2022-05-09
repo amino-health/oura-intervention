@@ -27,8 +27,8 @@ class Database {
   }
 
   /// Returns the value of a field given a [collection] and a [field]
-  Future<dynamic> getFieldValue(String collection, String field) async {
-    String uid = authentication.currentUser!.uid;
+  Future<dynamic> getFieldValue(String collection, String field, [String? uid]) async {
+    uid ??= authentication.currentUser!.uid;
     dynamic fieldValue = await firestore.collection(collection).doc(uid).get().then((value) {
       return value.data()![field];
     });
@@ -41,11 +41,16 @@ class Database {
       // TODO: send this to coach
       UserCredential credential = await authentication.createUserWithEmailAndPassword(email: email, password: password);
       String uid = credential.user!.uid;
+
       firestore.collection('users').doc(uid).set({
         'admin': false,
         'username': username,
         'latestUpdate': '2000-01-01',
       }).catchError((error) => throw Exception('Unknown error'));
+
+      firestore.collection('userActions').doc(uid).set({}).catchError((error) => throw Exception('Unknown error'));
+      firestore.collection('userData').doc(uid).set({}).catchError((error) => throw Exception('Unknown error'));
+      firestore.collection('userMessages').doc(uid).set({}).catchError((error) => throw Exception('Unknown error'));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         return AddUserStatus.emailInvalid;
@@ -120,7 +125,6 @@ class Database {
     final userid = authentication.currentUser!.uid;
     String latestUpdate = await getFieldValue('users', 'latestUpdate');
     String currentDate = DateTime.now().toString().substring(0, DateTime.now().toString().length - 13);
-
     var url = Uri.parse('https://api.ouraring.com/v1/sleep?start=$latestUpdate&end=$currentDate&access_token=$token');
     var response = await http.get(url, headers: {"Accept": "application/json", "Access-Control-Allow-Origin": "*"});
 
@@ -159,14 +163,14 @@ class Database {
     return true;
   }
 
-  Future<bool> uploadAction(String action, String date) async {
-    final userid = authentication.currentUser!.uid;
+  Future<bool> uploadAction(String action, String date, [String? uid]) async {
+    uid ??= authentication.currentUser!.uid;
     if (action == "") return false; // no action
     if (date == "") return false; //TODO: check that date is not in the future?
 
     firestore
         .collection('userActions')
-        .doc(userid)
+        .doc(uid)
         .collection('actions')
         .add({'action': action, 'date': date})
         .then((value) => print("Action uploaded"))
@@ -175,32 +179,31 @@ class Database {
     return true;
   }
 
-  Future<bool> deleteAction(String action, String date) async {
-    final userid = authentication.currentUser!.uid;
+  Future<bool> deleteAction(String action, String date, [String? uid]) async {
+    uid ??= authentication.currentUser!.uid;
     bool foundAction = true;
 
     await firestore
         .collection('userActions')
-        .doc(userid)
+        .doc(uid)
         .collection('actions')
         .where('action', isEqualTo: action)
         .where('date', isEqualTo: date)
         .get()
         .then((QuerySnapshot snapshot) async => {
               if (snapshot.docs.isEmpty) {foundAction = false},
-              for (var element in snapshot.docs)
-                {await firestore.collection('userActions').doc(userid).collection('actions').doc(element.id).delete()}
+              for (var element in snapshot.docs) {await firestore.collection('userActions').doc(uid).collection('actions').doc(element.id).delete()}
             });
     return foundAction;
   }
 
-  Future<List<Map<String, String>>> getActions() async {
+  Future<List<Map<String, String>>> getActions([String? uid]) async {
     if (globals.actions.isNotEmpty) {
       return globals.actions;
     }
-    final userid = authentication.currentUser!.uid;
+    uid ??= authentication.currentUser!.uid;
     List<Map<String, String>> actions = [];
-    await firestore.collection('userActions').doc(userid).collection('actions').get().then((QuerySnapshot snapshot) {
+    await firestore.collection('userActions').doc(uid).collection('actions').get().then((QuerySnapshot snapshot) {
       for (var element in snapshot.docs) {
         actions.add({'date': element['date'], 'action': element['action']});
       }
@@ -209,11 +212,12 @@ class Database {
     return actions;
   }
 
-  Future<void> uploadMessage(String dateTime, String userId, String message, bool coach) async {
-    assert(userId != "" && message != "");
+  Future<void> uploadMessage(String dateTime, String message, bool coach, [String? uid]) async {
+    uid ??= authentication.currentUser!.uid;
+    assert(uid != "" && message != "");
     firestore
         .collection('userMessages')
-        .doc(userId)
+        .doc(uid)
         .collection('messages')
         .add({'message': message, 'date': dateTime, 'coach': coach})
         .then((value) => print("Sleep data uploaded"))
@@ -232,16 +236,10 @@ class Database {
     return messages;
   }
 
-  Future<List<String>> getActionDates(String action) async {
-    final userid = authentication.currentUser!.uid;
+  Future<List<String>> getActionDates(String action, [String? uid]) async {
+    uid ??= authentication.currentUser!.uid;
     List<String> dates = [];
-    await firestore
-        .collection('userActions')
-        .doc(userid)
-        .collection('actions')
-        .where('action', isEqualTo: action)
-        .get()
-        .then((QuerySnapshot snapshot) {
+    await firestore.collection('userActions').doc(uid).collection('actions').where('action', isEqualTo: action).get().then((QuerySnapshot snapshot) {
       for (var element in snapshot.docs) {
         dates.add(element['date']);
       }
@@ -257,9 +255,9 @@ class Database {
     return user.email;
   }
 
-  Future<List<Map<String, dynamic>>> getSleepData() async {
-    final userid = authentication.currentUser!.uid;
-    QuerySnapshot snapshot = await firestore.collection('userData').doc(userid).collection('sleep').get();
+  Future<List<Map<String, dynamic>>> getSleepData([String? uid]) async {
+    uid ??= authentication.currentUser!.uid;
+    QuerySnapshot snapshot = await firestore.collection('userData').doc(uid).collection('sleep').get();
 
     List<Map<String, dynamic>> sleepData = snapshot.docs.map((doc) => doc.data()).toList().cast();
     return sleepData;
@@ -297,5 +295,19 @@ class Database {
       throw Exception(e);
     }
     return UpdatePasswordStatus.successful;
+  }
+
+  Future<List<Map<String, String>>> getallUsers() async {
+    QuerySnapshot snapshot = await firestore.collection('users').where('admin', isEqualTo: false).get();
+
+    List<Map<String, dynamic>> userData = snapshot.docs.map((doc) => doc.data()).toList().cast();
+    List<String> ids = snapshot.docs.map((doc) => doc.id).toList().cast();
+    List<Map<String, String>> users = [];
+
+    for (var i = 0; i < userData.length; i++) {
+      users.add({'username': userData[i]['username'], 'id': ids[i]});
+    }
+
+    return users;
   }
 }
