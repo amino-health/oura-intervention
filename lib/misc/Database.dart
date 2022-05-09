@@ -44,6 +44,7 @@ class Database {
       firestore.collection('users').doc(uid).set({
         'admin': false,
         'username': username,
+        'latestUpdate': '2000-01-01',
       }).catchError((error) => throw Exception('Unknown error'));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
@@ -116,8 +117,11 @@ class Database {
 
   /// Uploads sleepdata using the Oura api and a [token]
   Future<bool> uploadSleepData(String token) async {
-    ///TODO: This should probably be done in OuraLoginButton.dart in a private function.
-    var url = Uri.parse('https://api.ouraring.com/v1/sleep?start=2020-01-01&end=2022-04-22&access_token=$token');
+    final userid = authentication.currentUser!.uid;
+    String latestUpdate = await getFieldValue('users', 'latestUpdate');
+    String currentDate = DateTime.now().toString().substring(0, DateTime.now().toString().length - 13);
+
+    var url = Uri.parse('https://api.ouraring.com/v1/sleep?start=$latestUpdate&end=$currentDate&access_token=$token');
     var response = await http.get(url, headers: {"Accept": "application/json", "Access-Control-Allow-Origin": "*"});
 
     Map<String, dynamic> sleepJson = jsonDecode(response.body) as Map<String, dynamic>;
@@ -127,8 +131,6 @@ class Database {
     for (int i = 0; i < sleepJson['sleep']!.length; i++) {
       sleepList.add(SleepData.fromJson(sleepJson['sleep']![i]));
     }
-
-    final userid = authentication.currentUser!.uid;
 
     if (sleepList.length == 0.0) {
       return false; //no data to upload
@@ -152,6 +154,8 @@ class Database {
           .then((value) => print("Sleep data uploaded"))
           .catchError((error) => print("Failed to upload sleep data for ${doc.date}: $error"));
     }
+    firestore.collection('users').doc(userid).update({'latestUpdate': currentDate});
+
     return true;
   }
 
