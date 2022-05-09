@@ -52,7 +52,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
               )
             },
             child: Image.asset('../../assets/images/' + images[i]),
-            style: ElevatedButton.styleFrom(side: const BorderSide(width: 1.0), fixedSize: Size(buttonSize, buttonSize), primary: Colors.white),
+            style: ElevatedButton.styleFrom(side: const BorderSide(width: 1.0), fixedSize: Size(buttonSize, buttonSize), primary: _currentScreenIndex == i ? Colors.grey : Colors.white),
           )));
     }
     return buttons;
