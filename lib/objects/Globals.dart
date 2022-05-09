@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ouraintervention/objects/SleepData.dart';
 
 /// Color scheme:
 Color mainColor = const Color(0xFF193352);
@@ -12,3 +11,5 @@ Color grey = const Color(0xFFe7e7e6);
 List<Map<String, dynamic>> messages = [];
 List<Map<String, String>> actions = [];
 List<Map<String, dynamic>> sleepData = [];
+String username = "";
+String lastUpdate = "";

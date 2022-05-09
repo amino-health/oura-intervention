@@ -25,7 +25,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   @override
   void initState() {
     routes = [
-      Dashboard(),
+      Dashboard(database: widget.database),
       ProfileScreen(database: widget.database),
       ActionScreen(database: widget.database),
       SettingsScreen(database: widget.database),
