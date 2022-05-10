@@ -45,22 +45,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Padding(
               padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
               child: SizedBox(
-                  height: 70.0,
+                  height: 100.0,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Container(
-                        height: 50.0,
-                        width: 300.0,
+                        height: 70.0,
+                        width: 400.0,
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Text(
                               appendMessage + message['message'],
-                              style: const TextStyle(fontSize: 10.0),
+                              style: const TextStyle(fontSize: 17.0),
                             )),
                         decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.all(Radius.circular(15.0))),
                       ),
-                      Text(date, style: const TextStyle(fontSize: 10.0, color: Color.fromARGB(255, 158, 158, 158)))
+                      Padding(
+                          padding: const EdgeInsets.only(top: 5.0, right: 10.0),
+                          child: Text(date, style: const TextStyle(fontSize: 15.0, color: Color.fromARGB(255, 158, 158, 158))))
                     ],
                   )))));
     }
@@ -70,33 +72,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Column(
-          children: [
-            Center(child: Image.network('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3uaMgPeSlemqzxsUKJGsLNBIK6AY7S5YaLg&usqp=CAU')),
-            Expanded(
-                child: Center(
-                    child: FutureBuilder(
+        Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Container(
+                height: 200.0,
+                decoration:
+                    BoxDecoration(color: Colors.white, border: Border.all(width: 2.0), borderRadius: const BorderRadius.all(Radius.circular(15.0))),
+                child: Column(
+                  children: [
+                    FutureBuilder(
                         future: widget.database.getEmail(),
                         builder: (BuildContext context, AsyncSnapshot<String?> text) {
-                          return Text(
-                            text.data ?? "",
-                            style: const TextStyle(fontSize: 20),
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 50.0, bottom: 20.0),
+                            child: Text(
+                              text.data == null ? 'Email: ' : 'Email: ' + text.data!,
+                              style: const TextStyle(fontSize: 20),
+                            ),
                           );
-                        }))),
-            Expanded(
-                child: Center(
-                    child: FutureBuilder(
+                        }),
+                    FutureBuilder(
                         future: widget.database.getFieldValue('users', 'username'),
                         builder: (BuildContext context, AsyncSnapshot<dynamic?> text) {
-                          return Text(
-                            text.data ?? "",
-                            style: const TextStyle(fontSize: 20),
-                          );
-                        })))
-          ],
-        ),
+                          return Padding(
+                              padding: const EdgeInsets.all(20.0),
+                              child: Text(
+                                text.data == null ? 'Username: ' : 'Username: ' + text.data!,
+                                style: const TextStyle(fontSize: 20),
+                              ));
+                        })
+                  ],
+                ))),
         Expanded(
             child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -144,7 +151,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       )
                     ],
                   )),
-              decoration: BoxDecoration(color: globals.grey, borderRadius: BorderRadius.all(Radius.circular(15.0)))),
+              decoration:
+                  BoxDecoration(color: globals.grey, border: Border.all(width: 2.0), borderRadius: const BorderRadius.all(Radius.circular(15.0)))),
         )),
       ],
     );
