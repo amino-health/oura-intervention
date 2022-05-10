@@ -30,8 +30,8 @@ class _ActionScreenState extends State<ActionScreen> {
   String xLabel = 'x';
   String yLabel = 'y';
   //FIXME: These should be fetched from the database.
-  var biometrics = ['Sleep', 'Heart Rate', 'Other Item'];
-  var _selectedBiometric = 'Sleep';
+  //var biometrics = ['Sleep', 'Heart Rate', 'Other Item'];
+  var _selectedBiometric = "";
 
   @override
   void initState() {
@@ -51,6 +51,55 @@ class _ActionScreenState extends State<ActionScreen> {
     }
 
     return false;
+  }
+
+  List<String> _getBiometrics() {
+    return [
+      'Minimum Heartrate',
+      'Average Heartrate',
+      'Maximum Heartrate',
+      'Total Sleep',
+      'Light Sleep',
+      'Rem Sleep',
+      'Deep Sleep',
+      'Minimum Heartrate Variance',
+      'Average Heartrate Variance',
+      'Maximum Heartrate Variance'
+    ];
+  }
+
+  Future<Expanded> loadBiometrics() async {
+    List<String> biometrics = await _getBiometrics();
+
+    if (_selectedBiometric == "") {
+      setState(() {
+        _selectedBiometric = "Average Heartrate";
+      });
+    }
+
+    print("yo");
+    return Expanded(
+        child: ButtonTheme(
+            alignedDropdown: true,
+            child: DropdownButton(
+              isExpanded: true,
+              value: _selectedBiometric,
+              dropdownColor: globals.grey,
+              icon: const Icon(Icons.keyboard_arrow_down),
+              items: biometrics.map((String biometric) {
+                return DropdownMenuItem(
+                  value: biometric,
+                  child: Text(biometric),
+                );
+              }).toList(),
+              onChanged: (String? newValue) async {
+                setState(() {
+                  _selectedBiometric = newValue!;
+                });
+
+                await updateData();
+              },
+            )));
   }
 
   List<String> _getUniqueActions() {
@@ -231,7 +280,7 @@ class _ActionScreenState extends State<ActionScreen> {
           }
         }
 
-        data.add(Data(globals.sleepData[i]['date'], globals.sleepData[i]['Total Sleep'], hasAction ? Colors.green : Colors.red));
+        data.add(Data(globals.sleepData[i]['date'], globals.sleepData[i][_selectedBiometric], hasAction ? Colors.green : Colors.red));
 
         if (globals.sleepData[i]['date'].compareTo(endDate) >= 0) {
           break;
@@ -383,7 +432,18 @@ class _ActionScreenState extends State<ActionScreen> {
                                       padding: const EdgeInsets.all(10.0),
                                       child: Column(children: [
                                         Row(children: [
-                                          Expanded(
+                                          FutureBuilder<Expanded>(
+                                              future: loadBiometrics(),
+                                              builder: (BuildContext context, snapshot) {
+                                                if (snapshot.hasData) {
+                                                  return snapshot.data!;
+                                                } else if (snapshot.hasError) {
+                                                  return const Text('no data');
+                                                }
+                                                return const SizedBox.shrink();
+                                              })
+
+                                          /*Expanded(
                                               child: ButtonTheme(
                                                   alignedDropdown: true,
                                                   child: DropdownButton(
@@ -402,7 +462,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                                         _selectedBiometric = newValue!;
                                                       });
                                                     },
-                                                  ))),
+                                                  ))),*/
                                         ]),
                                       ]))))),
                       Expanded(
