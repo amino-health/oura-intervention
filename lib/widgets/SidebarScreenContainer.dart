@@ -20,21 +20,22 @@ class SidebarScreenContainer extends StatefulWidget {
 
 class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   List<Widget> routes = [];
+  List<String> screenTitles = ['Dashboard', 'Profile', 'Activities', 'Settings'];
   List<String> images = ['home.png', 'profile.png', 'running.png', 'settings.png'];
   List<String> _users = ['Choose a user'];
   String _selectedUser = 'Choose a user';
-  
+
   void intializeUsers() async {
     if (globals.users.isEmpty) {
       globals.users = await widget.database.getallUsers();
     }
- 
+
     List<String> usernames = [];
     for (var i = 0; i < globals.users.length; i++) {
       usernames.add(globals.users[i]['username']!);
     }
     setState(() {
-      _users = _users + usernames;  
+      _users = _users + usernames;
     });
   }
 
@@ -54,28 +55,40 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
 
   int _currentScreenIndex = 0;
 
-  double buttonSize = 100.0;
-  double padding = 10;
-
   List<Widget> _createButtons() {
     List<Widget> buttons = [];
     for (var i = 0; i < routes.length; i++) {
-      buttons.add(Padding(
-          padding: EdgeInsets.all(padding),
-          child: ElevatedButton(
-            onPressed: () => {
-              setState(
-                () {
-                  _currentScreenIndex = i;
-                },
-              )
-            },
-            child: Image.asset('../../assets/images/' + images[i]),
-            style: ElevatedButton.styleFrom(
-                side: const BorderSide(width: 1.0),
-                fixedSize: Size(buttonSize, buttonSize),
-                primary: _currentScreenIndex == i ? Colors.grey : Colors.white),
-          )));
+      buttons.add(
+        Padding(
+            padding: EdgeInsets.all(10.0),
+            child: Container(
+                width: 70.0,
+                height: 70.0,
+                child: ElevatedButton(
+                  onPressed: () => {
+                    setState(
+                      () {
+                        _currentScreenIndex = i;
+                      },
+                    )
+                  },
+                  child: Padding(
+                      padding: _currentScreenIndex == i ? EdgeInsets.all(5.0) : EdgeInsets.all(0.0),
+                      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                        Container(
+                            decoration: BoxDecoration(
+                                color: Colors.white, border: Border.all(width: 3.0), borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                            child: Padding(padding: EdgeInsets.all(5.0), child: Image.asset('../../assets/images/' + images[i]))),
+                        Text('   ' + screenTitles[i])
+                      ])),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.all(0.0),
+                    primary: _currentScreenIndex == i ? globals.mainColor : globals.secondaryColor,
+                    elevation: 0.0,
+                    shadowColor: Colors.transparent,
+                  ),
+                ))),
+      );
     }
     return buttons;
   }
@@ -116,8 +129,8 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
                                     _selectedUser = newValue!;
                                   });
                                   globals.resetGlobals();
-                                  for(var i = 0; i < globals.users.length; i++) {
-                                    if(globals.users[i]['username'] == _selectedUser) {
+                                  for (var i = 0; i < globals.users.length; i++) {
+                                    if (globals.users[i]['username'] == _selectedUser) {
                                       globals.coachedId = globals.users[i]['id'];
                                       break;
                                     }
@@ -128,8 +141,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
                 ]),
             body: Row(
               children: [
-                SizedBox(
-                    width: buttonSize + 2 * padding, child: Container(color: globals.secondaryColor, child: ListView(children: _createButtons()))),
+                SizedBox(width: 200.0, child: Container(color: globals.secondaryColor, child: ListView(children: _createButtons()))),
                 Expanded(child: routes[_currentScreenIndex])
               ],
             )));
