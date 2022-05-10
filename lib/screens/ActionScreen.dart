@@ -231,7 +231,7 @@ class _ActionScreenState extends State<ActionScreen> {
           }
         }
 
-        data.add(Data(globals.sleepData[i]['date'], globals.sleepData[i]['totalSleep'], hasAction ? Colors.green : Colors.red));
+        data.add(Data(globals.sleepData[i]['date'], globals.sleepData[i]['Total Sleep'], hasAction ? Colors.green : Colors.red));
 
         if (globals.sleepData[i]['date'].compareTo(endDate) >= 0) {
           break;

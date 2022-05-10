@@ -146,13 +146,16 @@ class Database {
           .collection('sleep')
           .doc(doc.date)
           .set({
-            'minHr': doc.minHr,
-            'avgHr': doc.avgHr,
-            'maxHr': doc.maxHr,
-            'totalSleep': doc.totalSleep,
-            'lightSleep': doc.lightSleep,
-            'remSleep': doc.remSleep,
-            'deepSleep': doc.deepSleep,
+            'Minimum Heartrate': doc.minHr,
+            'Average Heartrate': doc.avgHr,
+            'Maximum Heartrate': doc.maxHr,
+            'Total Sleep': doc.totalSleep,
+            'Light Sleep': doc.lightSleep,
+            'Rem Sleep': doc.remSleep,
+            'Deep Sleep': doc.deepSleep,
+            'Minimum Heartrate Variance': doc.minHrv,
+            'Average Heartrate Variance': doc.avgHrv,
+            'Maximum Heartrate Variance': doc.maxHrv,
             'date': doc.date
           })
           .then((value) => print("Sleep data uploaded"))
