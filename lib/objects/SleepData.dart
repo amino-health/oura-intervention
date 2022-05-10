@@ -38,15 +38,17 @@ class SleepData {
   factory SleepData.fromJson(Map<String, dynamic> json) {
     //because max heart rate is not stored, we have to calculate it
     List<dynamic> hr = json['hr_5min'];
-    List<dynamic> hrv = json['hr_5min'];
+    List<dynamic> hrv = json['rmssd_5min'];
     List<double> hrList = [];
     List<double> hrvList = [];
     double avgHrv = 0; //cumulative variable
     for (int i = 0; i < hr.length; i++) {
       hrList.add(hr[i] as double);
+    }
+    for (int i = 0; i < hrv.length; i++) {
       if (hrv[i] > 0) {
         avgHrv += hrv[i]; //increase cumulatively
-        hrList.add(hrv[i] as double);
+        hrvList.add(hrv[i] as double);
       }
     }
     hrList.sort();
