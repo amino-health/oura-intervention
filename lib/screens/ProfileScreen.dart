@@ -28,10 +28,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<List<Widget>> createMessageContainers() async {
-    print("hello");
     List<Widget> containers = [];
     String userId = globals.coachedId != null ? globals.coachedId! : widget.database.authentication.currentUser!.uid;
 
+    print(globals.messages);
     // This is to reduce the number of database requests
     if (globals.messages.isEmpty) {
       globals.messages = await widget.database.getMessages(userId);
@@ -48,12 +48,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Padding(
               padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
               child: SizedBox(
-                  height: 100.0,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Container(
-                        height: 70.0,
+                        height: 100.0,
                         width: 400.0,
                         child: Padding(
                             padding: const EdgeInsets.all(10.0),
@@ -77,23 +76,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Row(
       children: <Widget>[
         Column(children: [
-          Padding(padding: const EdgeInsets.all(20.0), child: Container(
-            width: 100.0,
-            height: 100.0,
-              decoration: BoxDecoration(
-                  color: const Color.fromRGBO(255, 255, 255, 1), border: Border.all(width: 3.0), borderRadius: const BorderRadius.all(Radius.circular(15.0))),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(0.0),
-                    elevation: 0.0,
-                    shadowColor: Colors.transparent,
-                    primary: Colors.transparent,
-                  ),
-                child: Padding(padding: const EdgeInsets.all(5.0), child: Image.asset('../../assets/images/refresh.png')),
-                onPressed: () {setState(() {
-                  globals.messages = [];
-                });},
-              ))),
+          Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                  width: 100.0,
+                  height: 100.0,
+                  decoration: BoxDecoration(
+                      color: const Color.fromRGBO(255, 255, 255, 1),
+                      border: Border.all(width: 3.0),
+                      borderRadius: const BorderRadius.all(Radius.circular(15.0))),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(0.0),
+                      elevation: 0.0,
+                      shadowColor: Colors.transparent,
+                      primary: Colors.transparent,
+                    ),
+                    child: Padding(padding: const EdgeInsets.all(5.0), child: Image.asset('../../assets/images/refresh.png')),
+                    onPressed: () async {
+                      setState(() {
+                        globals.messages = [];
+                      });
+                      scrollController.animateTo(scrollController.position.maxScrollExtent,
+                          duration: const Duration(seconds: 1), curve: Curves.fastOutSlowIn);
+                    },
+                  ))),
           Padding(
               padding: const EdgeInsets.only(left: 20.0),
               child: Container(

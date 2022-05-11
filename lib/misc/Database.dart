@@ -66,6 +66,7 @@ class Database {
     } catch (e) {
       throw Exception(e);
     }
+    uploadMessage(DateTime.now().toString(), 'Welcome to the application. This is where you will recieve messages from your coach. Try sending them a message!', true);
     return AddUserStatus.successful;
   }
 
@@ -231,7 +232,7 @@ class Database {
     assert(userId != "");
     List<Map<String, dynamic>> messages = [];
     //Limited to 2 messages to lower amount of reads
-    await firestore.collection('userMessages').doc(userId).collection('messages').orderBy('date').limit(5).get().then((QuerySnapshot snapshot) {
+    await firestore.collection('userMessages').doc(userId).collection('messages').orderBy('date').get().then((QuerySnapshot snapshot) {
       for (var element in snapshot.docs) {
         messages.add({'message': element['message'], 'date': element['date'], 'coach': element['coach']});
       }
