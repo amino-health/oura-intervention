@@ -6,16 +6,16 @@ import 'package:ouraintervention/objects/Globals.dart' as globals;
 import 'package:ouraintervention/widgets/LoadingWidget.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
-class ActionScreen extends StatefulWidget {
-  const ActionScreen({Key? key, required this.database}) : super(key: key);
+class DataScreen extends StatefulWidget {
+  const DataScreen({Key? key, required this.database}) : super(key: key);
 
   final Database database;
 
   @override
-  State<ActionScreen> createState() => _ActionScreenState();
+  State<DataScreen> createState() => _DataScreenState();
 }
 
-class _ActionScreenState extends State<ActionScreen> {
+class _DataScreenState extends State<DataScreen> {
   final addActionController = TextEditingController();
   final addDateController = TextEditingController();
   final deleteActionController = TextEditingController();
@@ -268,9 +268,7 @@ class _ActionScreenState extends State<ActionScreen> {
       globals.sleepData = await widget.database.getSleepData(globals.coachedId);
     }
 
-    List<double> withActionList = [];
-    List<double> withoutActionList = [];
-
+    List<Data> data = [];
     for (var i = 0; i < globals.sleepData.length; i++) {
       if (globals.sleepData[i]['date'].compareTo(startDate) >= 0 && globals.sleepData[i]['date'].compareTo(endDate) <= 0) {
         bool hasAction = false;
@@ -281,11 +279,7 @@ class _ActionScreenState extends State<ActionScreen> {
           }
         }
 
-        if (hasAction) {
-          withActionList.add(globals.sleepData[i][_selectedBiometric]);
-        } else {
-          withoutActionList.add(globals.sleepData[i][_selectedBiometric]);
-        }
+        data.add(Data(globals.sleepData[i]['date'], globals.sleepData[i][_selectedBiometric], hasAction ? Colors.green : Colors.red));
 
         if (globals.sleepData[i]['date'].compareTo(endDate) >= 0) {
           break;
@@ -293,23 +287,7 @@ class _ActionScreenState extends State<ActionScreen> {
       }
     }
 
-    double withActionAverage = 0.0;
-    double withoutActionAverage = 0.0;
-    if (withActionList.isNotEmpty) {
-      for (var i = 0; i < withActionList.length; i++) {
-        withActionAverage += withActionList[i];
-      }
-      withActionAverage /= withActionList.length;
-    }
-
-    if (withoutActionList.isNotEmpty) {
-      for (var i = 0; i < withoutActionList.length; i++) {
-        withoutActionAverage += withoutActionList[i];
-      }
-      withoutActionAverage /= withoutActionList.length;
-    }
-
-    return _createSeriesList([Data('Average With Action', withActionAverage, Colors.blue), Data('Average Without Action', withoutActionAverage, Colors.blue)]);
+    return _createSeriesList(data);
   }
 
   Future<void> _deleteActionDialog() async {
@@ -403,7 +381,11 @@ class _ActionScreenState extends State<ActionScreen> {
                   : charts.BarChart(
                       _data,
                       animate: true,
-                      behaviors: [charts.ChartTitle(_selectedBiometric, behaviorPosition: charts.BehaviorPosition.start)],
+                      behaviors: [
+                        charts.ChartTitle('Days',
+                            behaviorPosition: charts.BehaviorPosition.bottom, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
+                        charts.ChartTitle(_selectedBiometric, behaviorPosition: charts.BehaviorPosition.start),
+                      ],
                     )),
         ),
         Expanded(

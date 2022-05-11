@@ -72,8 +72,8 @@ class _OuraLoginButtonState extends State<OuraLoginButton> {
     return ElevatedButton(
       onPressed: !_isConnected ? _authenticate : null,
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
-      ),
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder())),
       child: Text(
         _loginButtonText,
         style: const TextStyle(fontSize: 25.0, color: Colors.white),

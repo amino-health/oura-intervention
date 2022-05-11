@@ -6,6 +6,7 @@ import 'package:ouraintervention/widgets/OuraLoginButton.dart';
 import 'package:ouraintervention/screens/Dashboard.dart';
 import 'package:ouraintervention/screens/ProfileScreen.dart';
 import 'package:ouraintervention/screens/SettingsScreen.dart';
+import 'package:ouraintervention/screens/DataScreen.dart';
 import 'package:ouraintervention/screens/ActionScreen.dart';
 import 'package:ouraintervention/objects/Globals.dart' as globals;
 
@@ -20,8 +21,8 @@ class SidebarScreenContainer extends StatefulWidget {
 
 class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
   List<Widget> routes = [];
-  List<String> screenTitles = ['Dashboard', 'Profile', 'Activities', 'Settings'];
-  List<String> images = ['home.png', 'profile.png', 'running.png', 'settings.png'];
+  List<String> screenTitles = ['Dashboard', 'Profile', 'Data',  'Compare', 'Settings'];
+  List<String> images = ['home.png', 'profile.png', 'chart.png', 'balance.png', 'settings.png'];
   List<String> _users = ['Choose a user'];
   String _selectedUser = 'Choose a user';
 
@@ -44,6 +45,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
     routes = [
       Dashboard(database: widget.database),
       ProfileScreen(database: widget.database),
+      DataScreen(database: widget.database),
       ActionScreen(database: widget.database),
       SettingsScreen(database: widget.database),
     ];

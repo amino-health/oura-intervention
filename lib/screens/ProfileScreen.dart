@@ -14,6 +14,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final messageController = TextEditingController();
+  final scrollController = ScrollController();
 
   Future<void> uploadMessage(String message) async {
     String dateTime = DateTime.now().toString();
@@ -23,9 +24,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     messageController.clear();
+    scrollController.animateTo(scrollController.position.maxScrollExtent, duration: const Duration(seconds: 1), curve: Curves.fastOutSlowIn);
   }
 
   Future<List<Widget>> createMessageContainers() async {
+    print("hello");
     List<Widget> containers = [];
     String userId = globals.coachedId != null ? globals.coachedId! : widget.database.authentication.currentUser!.uid;
 
@@ -73,37 +76,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
-        Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: Container(
-                height: 200.0,
-                decoration:
-                    BoxDecoration(color: Colors.white, border: Border.all(width: 2.0), borderRadius: const BorderRadius.all(Radius.circular(15.0))),
-                child: Column(
-                  children: [
-                    FutureBuilder(
-                        future: widget.database.getEmail(),
-                        builder: (BuildContext context, AsyncSnapshot<String?> text) {
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 50.0, bottom: 20.0),
-                            child: Text(
-                              text.data == null ? 'Email: ' : 'Email: ' + text.data!,
-                              style: const TextStyle(fontSize: 20),
-                            ),
-                          );
-                        }),
-                    FutureBuilder(
-                        future: widget.database.getFieldValue('users', 'username'),
-                        builder: (BuildContext context, AsyncSnapshot<dynamic?> text) {
-                          return Padding(
-                              padding: const EdgeInsets.all(20.0),
+        Column(children: [
+          Padding(padding: const EdgeInsets.all(20.0), child: Container(
+            width: 100.0,
+            height: 100.0,
+              decoration: BoxDecoration(
+                  color: const Color.fromRGBO(255, 255, 255, 1), border: Border.all(width: 3.0), borderRadius: const BorderRadius.all(Radius.circular(15.0))),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(0.0),
+                    elevation: 0.0,
+                    shadowColor: Colors.transparent,
+                    primary: Colors.transparent,
+                  ),
+                child: Padding(padding: const EdgeInsets.all(5.0), child: Image.asset('../../assets/images/refresh.png')),
+                onPressed: () {setState(() {
+                  globals.messages = [];
+                });},
+              ))),
+          Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Container(
+                  height: 200.0,
+                  decoration:
+                      BoxDecoration(color: Colors.white, border: Border.all(width: 2.0), borderRadius: const BorderRadius.all(Radius.circular(15.0))),
+                  child: Column(
+                    children: [
+                      FutureBuilder(
+                          future: widget.database.getEmail(),
+                          builder: (BuildContext context, AsyncSnapshot<String?> text) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 50.0, bottom: 20.0),
                               child: Text(
-                                text.data == null ? 'Username: ' : 'Username: ' + text.data!,
+                                text.data == null ? 'Email: ' : 'Email: ' + text.data!,
                                 style: const TextStyle(fontSize: 20),
-                              ));
-                        })
-                  ],
-                ))),
+                              ),
+                            );
+                          }),
+                      FutureBuilder(
+                          future: widget.database.getFieldValue('users', 'username'),
+                          builder: (BuildContext context, AsyncSnapshot<dynamic?> text) {
+                            return Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Text(
+                                  text.data == null ? 'Username: ' : 'Username: ' + text.data!,
+                                  style: const TextStyle(fontSize: 20),
+                                ));
+                          })
+                    ],
+                  )))
+        ]),
         Expanded(
             child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -120,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 if (snapshot.hasData) {
                                   List<Widget>? messageContainers = snapshot.data;
                                   return ListView.builder(
-                                      controller: ScrollController(),
+                                      controller: scrollController,
                                       itemCount: messageContainers!.length,
                                       itemBuilder: (BuildContext context, int index) {
                                         return messageContainers[index];
@@ -135,8 +157,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Padding(
                           padding: const EdgeInsets.only(top: 10.0),
                           child: TextField(
-                            onSubmitted: (value) {
-                              uploadMessage(value);
+                            onSubmitted: (value) async {
+                              await uploadMessage(value);
                             },
                             controller: messageController,
                             decoration: InputDecoration(
