@@ -103,7 +103,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
         home: Scaffold(
             appBar: AppBar(
                 title: Text(
-                  'Oura Intervention',
+                  'Amino Health',
                   style: const TextStyle(fontSize: 25.0, color: Colors.white),
                 ),
                 centerTitle: true,

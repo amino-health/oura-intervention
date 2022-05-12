@@ -102,7 +102,7 @@ class _ActionScreenState extends State<ActionScreen> {
   }
 
   List<String> _getUniqueActions() {
-    List<String> uniqueActions = ['Choose an action'];
+    List<String> uniqueActions = ['Choose an activity'];
     for (var action in globals.actions) {
       String? actionCheck = action['action'];
       if (actionCheck != null && !uniqueActions.contains(actionCheck)) {
@@ -119,7 +119,7 @@ class _ActionScreenState extends State<ActionScreen> {
 
     if (_selectedAction == "") {
       setState(() {
-        _selectedAction = 'Choose an action';
+        _selectedAction = 'Choose an activity';
       });
     }
 
@@ -214,7 +214,7 @@ class _ActionScreenState extends State<ActionScreen> {
 
         setState(() {
           globals.actions.removeAt(i);
-          _selectedAction = _hasAction(action) ? action : 'Choose an action';
+          _selectedAction = _hasAction(action) ? action : 'Choose an activity';
         });
 
         await updateData();
@@ -309,7 +309,7 @@ class _ActionScreenState extends State<ActionScreen> {
       withoutActionAverage /= withoutActionList.length;
     }
 
-    return _createSeriesList([Data('Average With Action', withActionAverage, Colors.blue), Data('Average Without Action', withoutActionAverage, Colors.blue)]);
+    return _createSeriesList([Data('Average With Activity', withActionAverage, Colors.blue), Data('Average Without Activity', withoutActionAverage, Colors.blue)]);
   }
 
   Future<void> _deleteActionDialog() async {
@@ -318,12 +318,12 @@ class _ActionScreenState extends State<ActionScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Action'),
+          title: const Text('Delete Activity'),
           content: Column(mainAxisSize: MainAxisSize.min, children: [
             Center(
                 child: Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: generateTextField(deleteActionController, "Action", false, const Icon(Icons.email_sharp)))),
+                    child: generateTextField(deleteActionController, "Activity", false, const Icon(Icons.email_sharp)))),
             Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: generateTextField(deleteDateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
@@ -336,7 +336,7 @@ class _ActionScreenState extends State<ActionScreen> {
               },
             ),
             TextButton(
-              child: const Text('Delete Action'),
+              child: const Text('Delete Activity'),
               onPressed: () async {
                 if (await deleteAction()) {
                   Navigator.of(context).pop();
@@ -357,12 +357,12 @@ class _ActionScreenState extends State<ActionScreen> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Add Action'),
+          title: const Text('Add Activity'),
           content: Column(mainAxisSize: MainAxisSize.min, children: [
             Center(
                 child: Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: generateTextField(addActionController, "Action", false, const Icon(Icons.email_sharp)))),
+                    child: generateTextField(addActionController, "Activity", false, const Icon(Icons.email_sharp)))),
             Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: generateTextField(addDateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
@@ -375,7 +375,7 @@ class _ActionScreenState extends State<ActionScreen> {
               },
             ),
             TextButton(
-              child: const Text('Add Action'),
+              child: const Text('Add Activity'),
               onPressed: () async {
                 if (await addAction()) {
                   Navigator.of(context).pop();
