@@ -183,7 +183,7 @@ class Database {
           .catchError((error) => print("Failed to upload sleep data for ${doc.date}: $error"));
     }
     firestore.collection('users').doc(userid).update({'latestUpdate': currentDate});
-
+    globals.latestUpdate = 'No data';
     return true;
   }
 

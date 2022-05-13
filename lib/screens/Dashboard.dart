@@ -60,9 +60,9 @@ class _DashboardState extends State<Dashboard> {
         "Welcome " + _username,
         style: TextStyle(fontSize: 70.0),
       ),
-      Text(
-        "Last Oura ring synchronization: " + _latestUpdate,
-        style: TextStyle(fontSize: 30.0),
+      Center(child: Text(
+        globals.isAdmin ? "You can select a user to display in the top-right corner" : "Last Oura ring synchronization: " + _latestUpdate,
+        style: TextStyle(fontSize: 30.0)),
       )
     ]);
   }

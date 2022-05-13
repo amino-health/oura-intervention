@@ -31,7 +31,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     List<Widget> containers = [];
     String userId = globals.coachedId != null ? globals.coachedId! : widget.database.authentication.currentUser!.uid;
 
-    print(globals.messages);
     // This is to reduce the number of database requests
     if (globals.messages.isEmpty) {
       globals.messages = await widget.database.getMessages(userId);
