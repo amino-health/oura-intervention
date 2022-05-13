@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ouraintervention/misc/Database.dart';
 import 'package:ouraintervention/objects/Globals.dart' as globals;
+import 'package:ouraintervention/screens/LoginScreen.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key, required this.database}) : super(key: key);
+  const SettingsScreen({Key? key, required this.database, required this.callback}) : super(key: key);
 
   final Database database;
+  final Function callback;
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -13,6 +15,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   String _errorText = "";
+  bool _loggedIn = true;
 
   // Reset password
   final emailControllerReset = TextEditingController();
@@ -65,12 +68,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _errorText = errorText;
     });
-    print(_errorText);
+
     return false;
   }
 
   Future<bool> deleteAccount() async {
-    return (await widget.database.deleteUser(emailControllerDelete.text, passwordControllerDelete.text));
+    bool success = await widget.database.deleteUser(emailControllerDelete.text, passwordControllerDelete.text);
+    if (success) {
+      globals.resetAllGlobals();
+      widget.callback();
+    }
+    return success;
+  }
+
+  Future<void> _logoutAccount() async {
+    await widget.database.logoutUser();
+    globals.resetAllGlobals();
+    widget.callback();
   }
 
   Future<void> _submitPasswordDialog() async {
@@ -253,11 +267,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Padding(
                             padding: const EdgeInsets.only(bottom: 30.0),
                             child: ElevatedButton(
+                                onPressed: _logoutAccount,
+                                child: const Text('Logout'),
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all<Color>(globals.dark),
+                                )))),
+                    Expanded(
+                        flex: 1,
+                        child: Padding(
+                            padding: const EdgeInsets.only(bottom: 30.0),
+                            child: ElevatedButton(
                                 onPressed: _deleteAccountDialog,
                                 child: const Text('Delete Account'),
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
                                 )))),
+                    // 1200x715
+                    
                   ],
                 ))));
   }

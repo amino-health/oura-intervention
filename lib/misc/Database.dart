@@ -66,7 +66,8 @@ class Database {
     } catch (e) {
       throw Exception(e);
     }
-    uploadMessage(DateTime.now().toString(), 'Welcome to the application. This is where you will recieve messages from your coach. Try sending them a message!', true);
+    uploadMessage(DateTime.now().toString(),
+        'Welcome to the application. This is where you will recieve messages from your coach. Try sending them a message!', true);
     return AddUserStatus.successful;
   }
 
@@ -80,8 +81,27 @@ class Database {
 
     AuthCredential credential = EmailAuthProvider.credential(email: email, password: password);
     await user.reauthenticateWithCredential(credential);
-    DocumentReference document = firestore.collection('users').doc(user.uid);
-    await document.delete();
+    String uid = user.uid;
+    DocumentReference usersDocument = firestore.collection('users').doc(uid);
+    DocumentReference actionsDocument = firestore.collection('userActions').doc(uid);
+    DocumentReference messagesDocument = firestore.collection('userMessages').doc(uid);
+    DocumentReference dataDocument = firestore.collection('userData').doc(uid);
+
+    await firestore.collection('userActions').doc(uid).collection('actions').get().then((QuerySnapshot snapshot) async => {
+          for (var element in snapshot.docs) {element.reference.delete()}
+        });
+    await firestore.collection('userMessages').doc(uid).collection('messages').get().then((QuerySnapshot snapshot) async => {
+          for (var element in snapshot.docs) {element.reference.delete()}
+        });
+    await firestore.collection('userData').doc(uid).collection('sleep').get().then((QuerySnapshot snapshot) async => {
+          for (var element in snapshot.docs) {element.reference.delete()}
+        });
+
+    await usersDocument.delete();
+    await actionsDocument.delete();
+    await messagesDocument.delete();
+    await dataDocument.delete();
+
     try {
       await user.delete();
     } on FirebaseAuthException catch (e) {

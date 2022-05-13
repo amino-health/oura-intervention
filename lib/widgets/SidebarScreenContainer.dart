@@ -11,9 +11,10 @@ import 'package:ouraintervention/screens/ActionScreen.dart';
 import 'package:ouraintervention/objects/Globals.dart' as globals;
 
 class SidebarScreenContainer extends StatefulWidget {
-  const SidebarScreenContainer({Key? key, required this.database}) : super(key: key);
+  const SidebarScreenContainer({Key? key, required this.database, required this.callback}) : super(key: key);
 
   final Database database;
+  final Function callback;
 
   @override
   State<SidebarScreenContainer> createState() => _SidebarScreenContainerState();
@@ -47,7 +48,7 @@ class _SidebarScreenContainerState extends State<SidebarScreenContainer> {
       ProfileScreen(database: widget.database),
       DataScreen(database: widget.database),
       ActionScreen(database: widget.database),
-      SettingsScreen(database: widget.database),
+      SettingsScreen(database: widget.database, callback: widget.callback),
     ];
     if (globals.isAdmin) {
       intializeUsers();

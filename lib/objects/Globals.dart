@@ -27,3 +27,11 @@ void resetGlobals() {
   messages = [];
   sleepData = [];
 }
+
+void resetAllGlobals() {
+  resetGlobals();
+  isAdmin = false;
+  username = "";
+  coachedId = null;
+  users = [];
+}
