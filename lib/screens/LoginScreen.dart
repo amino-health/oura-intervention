@@ -23,13 +23,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void login() async {
     LoginUserStatus loginUserStatus = await widget.database.loginUser(emailController.text, passwordController.text);
-    
-    globals.isAdmin = await widget.database.getFieldValue('users', 'admin');
+
     switch (loginUserStatus) {
       case LoginUserStatus.successful:
         setState(() {
           _loggedIn = true;
         });
+        globals.isAdmin = await widget.database.getFieldValue('users', 'admin');
         return;
       case LoginUserStatus.userNotFound:
         return setState(() {
@@ -98,11 +98,17 @@ class _LoginScreenState extends State<LoginScreen> {
         obscureText: obscureText);
   }
 
+  void logout() {
+    setState(() {
+      _loggedIn = false;
+    });
+  }
+
   // User login state.
   @override
   Widget build(BuildContext context) {
     return _loggedIn
-        ? SidebarScreenContainer(database: widget.database)
+        ? SidebarScreenContainer(database: widget.database, callback: logout)
         : MaterialApp(
             theme: ThemeData(scaffoldBackgroundColor: globals.grey),
             home: Scaffold(
