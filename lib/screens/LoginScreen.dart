@@ -26,10 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     switch (loginUserStatus) {
       case LoginUserStatus.successful:
-        setState(() {
-          _loggedIn = true;
-        });
         globals.isAdmin = await widget.database.getFieldValue('users', 'admin');
+        resetAfterLogin();
+
         return;
       case LoginUserStatus.userNotFound:
         return setState(() {
@@ -54,13 +53,22 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void resetAfterLogin() {
+    setState(() {
+      _loggedIn = true;
+      _signup = false;
+      _errorText = "";
+    });
+    usernameController.text = "";
+    emailController.text = "";
+    passwordController.text = "";
+  }
+
   void signup() async {
     AddUserStatus addUserStatus = await widget.database.addUser(emailController.text, passwordController.text, usernameController.text);
     switch (addUserStatus) {
       case AddUserStatus.successful:
-        setState(() {
-          _loggedIn = true;
-        });
+        resetAfterLogin();
         return;
       case AddUserStatus.emailBusy:
         return setState(() {
