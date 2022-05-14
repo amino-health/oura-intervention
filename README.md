@@ -20,8 +20,7 @@ https://docs.flutter.dev/get-started/install
 
 If using Microsoft Edge, run:
 
-```
-cmd
+```cmd
 Flutter run -d edge --web-port 8080
 ```
 
@@ -32,6 +31,8 @@ If using Google Chrome, web security must be disabled according to the following
 2. Remove flutter_tools.stamp from flutter\bin\cache
 3. Open chrome.dart from flutter\packages\flutter_tools\lib\src\web and on line 205 (under '--disable-extensions'), add the line '--disable-web-security'
 ----------------------------------------------------------------------------------------------------------------------------------
+
+After said steps are finished, run:
 
 ```cmd
 run
