@@ -297,15 +297,17 @@ class _DataScreenState extends State<DataScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Delete Activity'),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            Center(
-                child: Padding(
+          content: SizedBox(
+              width: 350.0,
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Center(
+                    child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: generateTextField(deleteActionController, "Enter Name of Activity", false, const Icon(Icons.email_sharp)))),
+                Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: generateTextField(deleteActionController, "Activity", false, const Icon(Icons.email_sharp)))),
-            Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: generateTextField(deleteDateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
-          ]),
+                    child: generateTextField(deleteDateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
+              ])),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
@@ -336,15 +338,17 @@ class _DataScreenState extends State<DataScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Add Activity'),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            Center(
-                child: Padding(
+          content: SizedBox(
+              width: 350.0,
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+                Center(
+                    child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: generateTextField(addActionController, "Enter Name of Activity", false, const Icon(Icons.email_sharp)))),
+                Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: generateTextField(addActionController, "Activity", false, const Icon(Icons.email_sharp)))),
-            Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: generateTextField(addDateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
-          ]),
+                    child: generateTextField(addDateController, currentDate, false, const Icon(Icons.calendar_month_sharp))),
+              ])),
           actions: <Widget>[
             TextButton(
               child: const Text('Cancel'),
