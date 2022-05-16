@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
-                  'Oura Intervention',
+                  'Amino Health',
                   style: TextStyle(fontSize: 30.0),
                 ),
                 Padding(
