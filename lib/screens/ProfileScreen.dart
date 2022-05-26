@@ -24,7 +24,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     messageController.clear();
-    scrollController.animateTo(scrollController.position.maxScrollExtent, duration: const Duration(seconds: 1), curve: Curves.fastOutSlowIn);
+    Future.delayed(
+        const Duration(milliseconds: 200),
+        () => {
+              scrollController.animateTo(scrollController.position.maxScrollExtent, duration: const Duration(seconds: 1), curve: Curves.fastOutSlowIn)
+            });
   }
 
   Future<List<Widget>> createMessageContainers() async {
@@ -48,24 +52,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
               child: SizedBox(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Container(
-                        height: 100.0,
-                        width: 400.0,
-                        child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Text(
-                              appendMessage + message['message'],
-                              style: const TextStyle(fontSize: 17.0),
-                            )),
-                        decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.all(Radius.circular(15.0))),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.only(top: 5.0, right: 10.0),
-                          child: Text(date, style: const TextStyle(fontSize: 15.0, color: Color.fromARGB(255, 158, 158, 158))))
-                    ],
-                  )))));
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    height: 100.0,
+                    width: 400.0,
+                    child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          appendMessage + message['message'],
+                          style: const TextStyle(fontSize: 17.0),
+                        )),
+                    decoration: BoxDecoration(color: color, borderRadius: const BorderRadius.all(Radius.circular(15.0))),
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 5.0, right: 10.0),
+                      child: Text(date, style: const TextStyle(fontSize: 15.0, color: Color.fromARGB(255, 158, 158, 158))))
+                ],
+              )))));
     }
     return containers;
   }
@@ -96,8 +100,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       setState(() {
                         globals.messages = [];
                       });
-                      scrollController.animateTo(scrollController.position.maxScrollExtent,
-                          duration: const Duration(seconds: 1), curve: Curves.fastOutSlowIn);
+                      Future.delayed(
+                          const Duration(milliseconds: 200),
+                          () => {
+                                scrollController.animateTo(scrollController.position.maxScrollExtent,
+                                    duration: const Duration(seconds: 1), curve: Curves.fastOutSlowIn)
+                              });
                     },
                   ))),
           Padding(
