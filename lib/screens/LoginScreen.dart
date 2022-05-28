@@ -16,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final usernameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
+  bool? acceptTC = false;
   String _errorText = "";
   bool _loggedIn = false;
   bool _signup = false;
@@ -167,10 +167,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: [
                                       _signup
-                                          ? ElevatedButton(
-                                              onPressed: signup,
-                                              child: const Text('Signup'),
-                                              style: ElevatedButton.styleFrom(primary: Colors.green, onPrimary: Colors.black))
+                                          ? Row(children: [
+                                              ElevatedButton(
+                                                  onPressed: acceptTC! ? signup : null,
+                                                  child: const Text('Signup'),
+                                                  style: ElevatedButton.styleFrom(primary: Colors.green, onPrimary: Colors.black)),
+                                              Checkbox(
+                                                value: acceptTC,
+                                                onChanged: (bool? value) {
+                                                  setState(() {
+                                                    acceptTC = value;
+                                                  });
+                                                },
+                                              ),
+                                              const Text("Accept Terms and Conditions", style: TextStyle(color: Colors.white))
+                                            ])
                                           : ElevatedButton(
                                               onPressed: login,
                                               child: const Text('Login'),
