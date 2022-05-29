@@ -37,6 +37,10 @@ class _ActionScreenState extends State<ActionScreen> {
   void initState() {
     super.initState();
     updateData();
+    if (globals.startDate != "") {
+      startDateController.text = globals.startDate;
+      endDateController.text = globals.endDate;
+    }
   }
 
   bool _isValidDate(String date) {
@@ -232,6 +236,9 @@ class _ActionScreenState extends State<ActionScreen> {
     setState(() {
       _data = seriesList;
     });
+
+    globals.startDate = startDateController.text;
+    globals.endDate = endDateController.text;
   }
 
   TextField generateTextField(TextEditingController controller, String labelText, bool obscureText, Icon icon) {

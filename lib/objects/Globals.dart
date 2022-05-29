@@ -16,6 +16,9 @@ List<Map<String, dynamic>> messages = [];
 List<Map<String, String>> actions = [];
 List<Map<String, dynamic>> sleepData = [];
 
+String startDate = "";
+String endDate = "";
+
 String latestUpdate = "No data";
 
 /// Coach data:
