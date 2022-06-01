@@ -72,6 +72,22 @@ class _ActionScreenState extends State<ActionScreen> {
     ];
   }
 
+  String _getBiometricsWithUnits(String chosenBiometric) {
+    Map<String, String> map = {
+      'Minimum Heartrate': 'Minimum Heartrate (bpm)',
+      'Average Heartrate': 'Average Heartrate (bpm)',
+      'Maximum Heartrate': 'Maximum Heartrate (bpm)',
+      'Total Sleep': 'Total Sleep (s))',
+      'Light Sleep': 'Light Sleep (s)',
+      'Rem Sleep': 'Rem Sleep (s)',
+      'Deep Sleep': 'Deep Sleep (s)',
+      'Minimum Heartrate Variance': 'Minimum Heartrate Variance (bpm)',
+      'Average Heartrate Variance': 'Average Heartrate Variance (bpm)',
+      'Maximum Heartrate Variance': 'Maximum Heartrate Variance (bpm)'
+    };
+    return map[chosenBiometric]!;
+  }
+
   Future<Expanded> loadBiometrics() async {
     List<String> biometrics = await _getBiometrics();
 
@@ -316,8 +332,10 @@ class _ActionScreenState extends State<ActionScreen> {
       withoutActionAverage /= withoutActionList.length;
     }
 
-    return _createSeriesList(
-        [Data('Average With Activity', withActionAverage, Colors.blue), Data('Average Without Activity', withoutActionAverage, Colors.blue)]);
+    return _createSeriesList([
+      Data(_selectedAction == "Choose an activity" ? "  " : 'Average With ' + _selectedAction, withActionAverage, Colors.green),
+      Data(_selectedAction == "Choose an activity" ? " " : 'Average Without ' + _selectedAction, withoutActionAverage, Colors.red)
+    ]);
   }
 
   Future<void> _deleteActionDialog() async {
@@ -415,7 +433,7 @@ class _ActionScreenState extends State<ActionScreen> {
                   : charts.BarChart(
                       _data,
                       animate: true,
-                      behaviors: [charts.ChartTitle(_selectedBiometric, behaviorPosition: charts.BehaviorPosition.start)],
+                      behaviors: [charts.ChartTitle(_getBiometricsWithUnits(_selectedBiometric), behaviorPosition: charts.BehaviorPosition.start)],
                     )),
         ),
         Expanded(
@@ -510,7 +528,7 @@ class _ActionScreenState extends State<ActionScreen> {
                                         backgroundColor: MaterialStateProperty.all<Color>(globals.secondaryColor),
                                       ),
                                       onPressed: updateData,
-                                      child: const Text("Update Date", style: TextStyle(fontSize: 25.0, color: Colors.white)))))
+                                      child: const Text("Update Graph", style: TextStyle(fontSize: 25.0, color: Colors.white)))))
                         ]),
                       )
                     ])))),

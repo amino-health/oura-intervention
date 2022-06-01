@@ -182,7 +182,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           content: const SizedBox(
               width: 400,
               child: Text(
-                  'This product is for general informational purposes only and does not constitute the practice of medicine, nursing or other professional health care services, including the giving of medical advice.\n\n The use of this information is at the user’s own risk.\n\n None of this is intended to be a substitute for professional medical advice, diagnosis, or treatment.\n\n Amino Health disclaims all responsibility and liability for the information collected or used by any third party service provider.\n\n Amino Health will have no responsibility or liability for any information, software, materials or services provided by any third parties.')),
+                  "TODO")), //'This product is for general informational purposes only and does not constitute the practice of medicine, nursing or other professional health care services, including the giving of medical advice.\n\n The use of this information is at the user’s own risk.\n\n None of this is intended to be a substitute for professional medical advice, diagnosis, or treatment.\n\n Amino Health disclaims all responsibility and liability for the information collected or used by any third party service provider.\n\n Amino Health will have no responsibility or liability for any information, software, materials or services provided by any third parties.')),
           actions: <Widget>[
             TextButton(
               child: const Text('Ok'),
@@ -283,7 +283,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
                                 )))),
                     // 1200x715
-                    
                   ],
                 ))));
   }

@@ -29,6 +29,7 @@ void resetGlobals() {
   actions = [];
   messages = [];
   sleepData = [];
+  latestUpdate = "No data";
 }
 
 void resetAllGlobals() {

@@ -72,6 +72,22 @@ class _DataScreenState extends State<DataScreen> {
     ];
   }
 
+  String _getBiometricsWithUnits(String chosenBiometric) {
+    Map<String, String> map = {
+      'Minimum Heartrate': 'Minimum Heartrate (bpm)',
+      'Average Heartrate': 'Average Heartrate (bpm)',
+      'Maximum Heartrate': 'Maximum Heartrate (bpm)',
+      'Total Sleep': 'Total Sleep (s))',
+      'Light Sleep': 'Light Sleep (s)',
+      'Rem Sleep': 'Rem Sleep (s)',
+      'Deep Sleep': 'Deep Sleep (s)',
+      'Minimum Heartrate Variance': 'Minimum Heartrate Variance (bpm)',
+      'Average Heartrate Variance': 'Average Heartrate Variance (bpm)',
+      'Maximum Heartrate Variance': 'Maximum Heartrate Variance (bpm)'
+    };
+    return map[chosenBiometric]!;
+  }
+
   Future<Expanded> loadBiometrics() async {
     List<String> biometrics = await _getBiometrics();
 
@@ -395,7 +411,7 @@ class _DataScreenState extends State<DataScreen> {
                       behaviors: [
                         charts.ChartTitle('Days',
                             behaviorPosition: charts.BehaviorPosition.bottom, titleOutsideJustification: charts.OutsideJustification.middleDrawArea),
-                        charts.ChartTitle(_selectedBiometric, behaviorPosition: charts.BehaviorPosition.start),
+                        charts.ChartTitle(_getBiometricsWithUnits(_selectedBiometric), behaviorPosition: charts.BehaviorPosition.start),
                       ],
                     )),
         ),
@@ -491,7 +507,7 @@ class _DataScreenState extends State<DataScreen> {
                                         backgroundColor: MaterialStateProperty.all<Color>(globals.secondaryColor),
                                       ),
                                       onPressed: updateData,
-                                      child: const Text("Update Date", style: TextStyle(fontSize: 25.0, color: Colors.white)))))
+                                      child: const Text("Update Graph", style: TextStyle(fontSize: 25.0, color: Colors.white)))))
                         ]),
                       )
                     ])))),
