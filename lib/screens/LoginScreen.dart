@@ -3,6 +3,10 @@ import 'package:ouraintervention/misc/Database.dart';
 import 'package:ouraintervention/widgets/SidebarScreenContainer.dart';
 import 'package:ouraintervention/objects/Globals.dart' as globals;
 
+/**
+ * LoginScreen: window displayed when logging in
+ * database: the database object that is used when communicating with the backend
+ */
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key, required this.database}) : super(key: key);
 
@@ -22,13 +26,14 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _signup = false;
 
   void login() async {
+    //Send login request
     LoginUserStatus loginUserStatus = await widget.database.loginUser(emailController.text, passwordController.text);
 
+    //Check response from the database
     switch (loginUserStatus) {
       case LoginUserStatus.successful:
         globals.isAdmin = await widget.database.getFieldValue('users', 'admin');
         resetAfterLogin();
-
         return;
       case LoginUserStatus.userNotFound:
         return setState(() {
@@ -53,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  //Reset text fields so that the login screen does not store text
   void resetAfterLogin() {
     setState(() {
       _loggedIn = true;
@@ -65,7 +71,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void signup() async {
+    //Send sign in request
     AddUserStatus addUserStatus = await widget.database.addUser(emailController.text, passwordController.text, usernameController.text);
+
+    //Check status of the response from the backend
     switch (addUserStatus) {
       case AddUserStatus.successful:
         resetAfterLogin();
@@ -93,6 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  //creates a text field widget
   Widget generateTextField(TextEditingController controller, String labelText, bool obscureText, Icon icon) {
     return TextField(
         controller: controller,
@@ -106,13 +116,13 @@ class _LoginScreenState extends State<LoginScreen> {
         obscureText: obscureText);
   }
 
+  // logout function that allows the user to return to the login page
   void logout() {
     setState(() {
       _loggedIn = false;
     });
   }
 
-  // User login state.
   @override
   Widget build(BuildContext context) {
     return _loggedIn
